@@ -1,8 +1,5 @@
 import React from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
-import { useAudio } from '../hooks/useAudio';
-
-export { useAudio };
 
 /**
  * Compact Navbar Music Toggle Button (takes zero bottom screen real-estate)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import RoyalEnvelope from './components/RoyalEnvelope';
 import PetalCanvas from './components/PetalCanvas';
-import { useAudio } from './components/AudioPlayer';
+import { useAudio } from './hooks/useAudio';
 import QuickNavbar from './components/QuickNavbar';
 import HeroSection from './components/HeroSection';
 import CoupleSection from './components/CoupleSection';
