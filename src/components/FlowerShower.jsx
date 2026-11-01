@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { Flower2 } from 'lucide-react';
+import { getLiveStats, incrementFlowerCount } from '../lib/supabase';
 
 /**
  * Custom Authentic Indian Marigold (गेंदा) Petal Shapes
@@ -100,27 +101,33 @@ export function triggerFlowerShower() {
  * Floating Quick Action Button for Flower Shower (पुष्प वर्षा)
  */
 export default function FloatingFlowerShower({ lang }) {
-  const [showerCount, setShowerCount] = useState(() => {
-    try {
-      return parseInt(localStorage.getItem('deepa_sumit_flower_count') || '108', 10);
-    } catch {
-      return 108;
-    }
-  });
-
+  const [showerCount, setShowerCount] = useState(168);
   const [isBouncing, setIsBouncing] = useState(false);
 
-  const handleClick = () => {
+  useEffect(() => {
+    // Load live counter from Supabase (or localStorage fallback)
+    getLiveStats().then((stats) => {
+      if (stats && stats.flower_count) {
+        setShowerCount(stats.flower_count);
+      }
+    });
+  }, []);
+
+  const handleClick = async () => {
     triggerFlowerShower();
-    const newCount = showerCount + 1;
-    setShowerCount(newCount);
+    setIsBouncing(true);
+
+    // Optimistically increment UI count
+    setShowerCount((prev) => prev + 1);
+
+    // Persist to Supabase
     try {
-      localStorage.setItem('deepa_sumit_flower_count', String(newCount));
+      const serverCount = await incrementFlowerCount();
+      if (serverCount) setShowerCount(serverCount);
     } catch {
       // ignore
     }
 
-    setIsBouncing(true);
     setTimeout(() => setIsBouncing(false), 600);
   };
 

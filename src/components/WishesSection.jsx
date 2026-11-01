@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { MessageSquareHeart, Send, Sparkles, Heart, Smile } from 'lucide-react';
+import { fetchWishes, submitWish } from '../lib/supabase';
 
 const initialWishes = [
   {
@@ -110,12 +111,24 @@ export default function WishesSection({ lang }) {
   const [successMsg, setSuccessMsg] = useState(false);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('deepa_sumit_wishes_v4', JSON.stringify(wishes));
-    } catch {
-      // fallback
-    }
-  }, [wishes]);
+    // Fetch live wishes from Supabase and merge with family blessings
+    fetchWishes().then((serverWishes) => {
+      if (serverWishes && serverWishes.length > 0) {
+        const formatted = serverWishes.map((w) => ({
+          id: w.id,
+          name: w.name,
+          relationship: w.relation || 'शुभचिंतक',
+          message: w.message,
+          date: new Date(w.created_at || Date.now()).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', {
+            month: 'short',
+            year: 'numeric'
+          }),
+          badge: lang === 'hi' ? 'स्नेहिल आशीष' : 'Blessing'
+        }));
+        setWishes([...formatted, ...initialWishes]);
+      }
+    });
+  }, [lang]);
 
   const applyTemplate = (tpl) => {
     setForm((prev) => ({
@@ -124,11 +137,17 @@ export default function WishesSection({ lang }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.message.trim()) return;
 
     setIsSubmitting(true);
+
+    const wishPayload = {
+      name: form.name.trim(),
+      relation: form.relationship,
+      message: form.message.trim(),
+    };
 
     const newWish = {
       id: Date.now(),
@@ -142,10 +161,18 @@ export default function WishesSection({ lang }) {
       badge: lang === 'hi' ? 'स्नेहिल आशीष' : 'Blessing'
     };
 
-    setWishes([newWish, ...wishes]);
+    // Optimistic UI update
+    setWishes((prev) => [newWish, ...prev]);
     setForm({ name: '', relationship: 'पारिवारिक सदस्य (Family Member)', message: '' });
     setIsSubmitting(false);
     setSuccessMsg(true);
+
+    // Save to Supabase
+    try {
+      await submitWish(wishPayload);
+    } catch {
+      // Handled
+    }
 
     try {
       confetti({

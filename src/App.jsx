@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RoyalEnvelope from './components/RoyalEnvelope';
 import PetalCanvas from './components/PetalCanvas';
 import { useAudio } from './components/AudioPlayer';
@@ -14,6 +14,7 @@ import Footer from './components/Footer';
 import RsvpModal from './components/RsvpModal';
 import FloatingFlowerShower, { triggerFlowerShower } from './components/FlowerShower';
 import { TraditionalToran } from './components/TraditionalMotifs';
+import { recordVisit } from './lib/supabase';
 import { Calendar, MapPin, Heart, MessageSquareHeart, Flower2, MessageCircle } from 'lucide-react';
 
 export default function App() {
@@ -23,6 +24,11 @@ export default function App() {
 
   // Audio Hook (controls auspicious background music)
   const { isPlaying, playMusic, toggleMusic } = useAudio();
+
+  // Log unique visit anonymously on first load
+  useEffect(() => {
+    recordVisit();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FAF7F0] text-[#4A0E17] font-sans relative selection:bg-[#9B111E] selection:text-white">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, CheckCircle, MessageCircle, Users, Sparkles } from 'lucide-react';
+import { submitRsvp } from '../lib/supabase';
 
 export default function RsvpModal({ isOpen, onClose, lang }) {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ export default function RsvpModal({ isOpen, onClose, lang }) {
     });
   };
 
-  const handleWhatsAppSubmit = (e) => {
+  const handleWhatsAppSubmit = async (e) => {
     e.preventDefault();
 
     const eventNames = {
@@ -38,6 +39,20 @@ export default function RsvpModal({ isOpen, onClose, lang }) {
 
     const selectedEventsText = formData.events.map((ev) => eventNames[ev]).join(', ');
 
+    // 1. Persist to Supabase Database
+    try {
+      await submitRsvp({
+        name: formData.name,
+        phone: formData.phone,
+        attending: true,
+        guestCount: formData.guestCount,
+        message: `${selectedEventsText} | ${formData.message || ''}`,
+      });
+    } catch {
+      // Handled
+    }
+
+    // 2. Open WhatsApp Message to Host
     const text =
       lang === 'hi'
         ? `*सादर प्रणाम साहू परिवार,* \nमैं दीपा एवं सुमित के शुभ विवाह में उपस्थिति दर्ज करना चाहता/चाहती हूँ।\n\n👤 *नाम:* ${formData.name}\n📞 *संपर्क:* ${formData.phone}\n👥 *अतिथि संख्या:* ${formData.guestCount}\n🎉 *शामिल होने वाले कार्यक्रम:* ${selectedEventsText}\n📝 *संदेश:* ${formData.message || 'सपरिवार उपस्थित होंगे।'}`
