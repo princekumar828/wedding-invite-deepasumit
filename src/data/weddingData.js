@@ -87,8 +87,8 @@ export const weddingData = {
         en: "January 20, 2027 (Wednesday)"
       },
       time: {
-        hi: "दिन में (अपराह्न)",
-        en: "Daytime (Afternoon)"
+        hi: "दिन में (पूर्वाह्न)",
+        en: "Daytime (Forenoon / Morning)"
       },
       location: {
         hi: "वर पक्ष का निवास स्थान (आन, चंदवा, लातेहार)",
@@ -97,8 +97,8 @@ export const weddingData = {
       icon: "Sparkles",
       color: "from-amber-500/20 to-orange-500/10",
       accent: "text-amber-700 border-amber-300",
-      calStart: "20270120T063000Z",
-      calEnd: "20270120T113000Z"
+      calStart: "20270120T043000Z",
+      calEnd: "20270120T083000Z"
     },
     {
       id: "haldi",
