@@ -7,50 +7,62 @@ const initialWishes = [
   {
     id: 1,
     name: "श्रीमती सुनिता देवी एवं श्री दिलीप साहू",
-    relationship: "वधू के माता-पिता",
+    relationshipHi: "वधू के माता-पिता",
+    relationshipEn: "Bride's Parents",
     message: "हमारी लाडली बिटिया दीपा और दामाद सुमित को भगवान लक्ष्मीनारायण का अखंड आशीर्वाद मिले। आपका जीवन सदा सुख, शांति और समृद्धि से महकता रहे। — माँ एवं पापा",
     date: "November 2026",
-    badge: "माँ-पापा का आशीष"
+    badgeHi: "माँ-पापा का आशीष",
+    badgeEn: "Parents' Blessing"
   },
   {
     id: 2,
     name: "आनन्द प्रसाद चौधरी एवं श्रीमती ललिता देवी",
-    relationship: "फूफा-फुआ",
+    relationshipHi: "फूफा-फुआ",
+    relationshipEn: "Uncle & Aunt",
     message: "वर-वधू को नव दाम्पत्य जीवन की हार्दिक बधाई एवं शुभाशीष। ईश्वर आप दोनों की जोड़ी को हर संकट से दूर रखे और हमेशा खुशहाल रखे।",
     date: "November 2026",
-    badge: "फूफा-फुआ का शुभाशीष"
+    badgeHi: "फूफा-फुआ का शुभाशीष",
+    badgeEn: "Elder's Blessing"
   },
   {
     id: 3,
     name: "श्री प्रदीप प्रसाद एवं श्री अनिल कुमार",
-    relationship: "वधू के चाचा जी",
+    relationshipHi: "वधू के चाचा जी",
+    relationshipEn: "Bride's Paternal Uncles",
     message: "दीपा बिटिया और सुमित को दांपत्य जीवन के पावन बंधन की ढेरों शुभकामनाएं। खुशियों और सफलताओं से भरा रहे आप दोनों का नया संसार।",
     date: "November 2026",
-    badge: "चाचा जी का आशीष"
+    badgeHi: "चाचा जी का आशीष",
+    badgeEn: "Uncle's Blessing"
   },
   {
     id: 4,
     name: "प्रिन्स",
-    relationship: "छोटा भाई (Younger Brother)",
+    relationshipHi: "छोटा भाई (अनुज)",
+    relationshipEn: "Younger Brother",
     message: "दीदी, आपके नए सफर की शुरुआत पर ढेर सारा प्यार और शुभकामनाएं! सुमित जीजा जी, हमारी दीदी का हमेशा ख्याल रखिएगा। आप दोनों को बहुत-बहुत बधाई!",
     date: "November 2026",
-    badge: "छोटे भाई का स्नेह"
+    badgeHi: "छोटे भाई का स्नेह",
+    badgeEn: "Brother's Love"
   },
   {
     id: 5,
     name: "सौरभ एवं समस्त भाई (सुशांत, अंकित, अमन, अर्पित, चिराग)",
-    relationship: "छोटे भाई (Younger Brothers)",
+    relationshipHi: "छोटे भाई (अनुज)",
+    relationshipEn: "Younger Brothers",
     message: "दीदी और जीजाजी को शुभ विवाह की अनंत मंगलकामनाएं! हम सब भाइयों की तरफ से दोनों को जीवन भर का प्यार और खुशियां।",
     date: "November 2026",
-    badge: "छोटे भाइयों का स्नेह"
+    badgeHi: "छोटे भाइयों का स्नेह",
+    badgeEn: "Brothers' Love"
   },
   {
     id: 6,
     name: "रूबी एवं रूची",
-    relationship: "बहने",
+    relationshipHi: "लाडली बहने",
+    relationshipEn: "Sisters",
     message: "दीदी और सुमित जीजू को वैवाहिक जीवन की ढेरों शुभकामनाएं! हमारी दीदी की शादी सबसे यादगार और खुशहाल होगी!",
     date: "November 2026",
-    badge: "लाडली बहने"
+    badgeHi: "लाडली बहने",
+    badgeEn: "Sisters' Love"
   }
 ];
 
@@ -72,20 +84,52 @@ const quickTemplates = {
 };
 
 const relationshipOptions = [
-  { value: "पारिवारिक सदस्य (Family Member)", labelHi: "पारिवारिक सदस्य", labelEn: "Family Member" },
-  { value: "छोटा भाई (Younger Brother)", labelHi: "छोटा भाई (अनुज)", labelEn: "Younger Brother" },
-  { value: "बड़ा भाई (Elder Brother)", labelHi: "बड़ा भाई (अग्रज)", labelEn: "Elder Brother" },
-  { value: "छोटी बहन (Younger Sister)", labelHi: "छोटी बहन (अनुजा)", labelEn: "Younger Sister" },
-  { value: "बड़ी बहन (Elder Sister)", labelHi: "बड़ी बहन", labelEn: "Elder Sister" },
-  { value: "चाचा / चाची (Uncle / Aunt)", labelHi: "चाचा / चाची", labelEn: "Uncle / Aunt" },
-  { value: "मामा / मामी (Maternal Uncle / Aunt)", labelHi: "मामा / मामी", labelEn: "Maternal Uncle / Aunt" },
-  { value: "फुआ / फूफा (Aunt & Uncle)", labelHi: "फुआ / फूफा", labelEn: "Aunt & Uncle" },
-  { value: "भाई / भाभी (Brother / Sister-in-law)", labelHi: "भाई / भाभी", labelEn: "Brother / Sister-in-law" },
-  { value: "बहन / जीजाजी (Sister / Brother-in-law)", labelHi: "बहन / जीजाजी", labelEn: "Sister / Brother-in-law" },
-  { value: "मित्र / सहेली (Friend)", labelHi: "मित्र / सहेली", labelEn: "Friend" },
-  { value: "सहकर्मी (Colleague)", labelHi: "सहकर्मी", labelEn: "Colleague" },
-  { value: "शुभचिंतक (Well Wisher)", labelHi: "शुभचिंतक", labelEn: "Well Wisher" }
+  { value: "पारिवारिक सदस्य", labelHi: "पारिवारिक सदस्य", labelEn: "Family Member" },
+  { value: "छोटा भाई (अनुज)", labelHi: "छोटा भाई (अनुज)", labelEn: "Younger Brother" },
+  { value: "बड़ा भाई (अग्रज)", labelHi: "बड़ा भाई (अग्रज)", labelEn: "Elder Brother" },
+  { value: "छोटी बहन (अनुजा)", labelHi: "छोटी बहन (अनुजा)", labelEn: "Younger Sister" },
+  { value: "बड़ी बहन", labelHi: "बड़ी बहन", labelEn: "Elder Sister" },
+  { value: "चाचा / चाची", labelHi: "चाचा / चाची", labelEn: "Uncle / Aunt" },
+  { value: "मामा / मामी", labelHi: "मामा / मामी", labelEn: "Maternal Uncle / Aunt" },
+  { value: "फुआ / फूफा", labelHi: "फुआ / फूफा", labelEn: "Aunt & Uncle" },
+  { value: "भाई / भाभी", labelHi: "भाई / भाभी", labelEn: "Brother / Sister-in-law" },
+  { value: "बहन / जीजाजी", labelHi: "बहन / जीजाजी", labelEn: "Sister / Brother-in-law" },
+  { value: "मित्र / सहेली", labelHi: "मित्र / सहेली", labelEn: "Friend" },
+  { value: "सहकर्मी", labelHi: "सहकर्मी", labelEn: "Colleague" },
+  { value: "शुभचिंतक", labelHi: "शुभचिंतक", labelEn: "Well Wisher" }
 ];
+
+// Helper to strictly show pure Hindi or English without awkward mixed parentheses
+const getLocalizedRelationship = (item, lang) => {
+  if (lang === 'hi') {
+    if (item.relationshipHi) return item.relationshipHi;
+    const rel = item.relationship || '';
+    const clean = rel.replace(/\s*\([A-Za-z\s/&,-]+\)/g, '').trim();
+    const match = relationshipOptions.find(o => o.value === rel || o.labelHi === clean || o.labelEn === rel);
+    return match ? match.labelHi : (clean || 'पारिवारिक सदस्य');
+  } else {
+    if (item.relationshipEn) return item.relationshipEn;
+    const rel = item.relationship || '';
+    const enMatch = rel.match(/\(([A-Za-z\s/&,-]+)\)/);
+    if (enMatch) return enMatch[1].trim();
+    const match = relationshipOptions.find(o => o.value === rel || o.labelHi === rel);
+    return match ? match.labelEn : (rel || 'Family Member');
+  }
+};
+
+const getLocalizedBadge = (item, lang) => {
+  if (lang === 'hi') {
+    if (item.badgeHi) return item.badgeHi;
+    const b = item.badge || '';
+    return b.replace(/\s*\([A-Za-z\s/&,-]+\)/g, '').trim() || 'स्नेहिल आशीष';
+  } else {
+    if (item.badgeEn) return item.badgeEn;
+    const b = item.badge || '';
+    const enMatch = b.match(/\(([A-Za-z\s/&,-]+)\)/);
+    if (enMatch) return enMatch[1].trim();
+    return 'Blessing';
+  }
+};
 
 export default function WishesSection({ lang }) {
   const [wishes, setWishes] = useState(() => {
@@ -109,7 +153,7 @@ export default function WishesSection({ lang }) {
 
   const [form, setForm] = useState({
     name: '',
-    relationship: 'पारिवारिक सदस्य (Family Member)',
+    relationship: 'पारिवारिक सदस्य',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -234,7 +278,7 @@ export default function WishesSection({ lang }) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="text-xs font-semibold text-gray-700 block mb-1">
-                  {lang === 'hi' ? 'आपका नाम (Your Name) *' : 'Your Name *'}
+                  {lang === 'hi' ? 'आपका शुभ नाम *' : 'Your Name *'}
                 </label>
                 <input
                   type="text"
@@ -249,7 +293,7 @@ export default function WishesSection({ lang }) {
               {/* Relationship Dropdown */}
               <div>
                 <label className="text-xs font-semibold text-gray-700 block mb-1">
-                  {lang === 'hi' ? 'संबंध / रिश्ता (Relationship) *' : 'Relationship *'}
+                  {lang === 'hi' ? 'संबंध / रिश्ता *' : 'Relationship *'}
                 </label>
                 <select
                   value={form.relationship}
@@ -268,7 +312,7 @@ export default function WishesSection({ lang }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-semibold text-gray-700 block">
-                    {lang === 'hi' ? 'आशीर्वाद संदेश (Your Blessing) *' : 'Your Blessing *'}
+                    {lang === 'hi' ? 'आशीर्वाद संदेश *' : 'Your Blessing *'}
                   </label>
                   <span className="text-[10px] text-[#9B111E] font-medium flex items-center gap-1">
                     <Smile className="w-3 h-3" />
@@ -340,12 +384,12 @@ export default function WishesSection({ lang }) {
                       <h4 className="text-xs sm:text-sm font-bold text-[#4A0E17] leading-tight">
                         {item.name}
                       </h4>
-                      <span className="text-[10px] text-gray-500">{item.relationship}</span>
+                      <span className="text-[10px] text-gray-500">{getLocalizedRelationship(item, lang)}</span>
                     </div>
                   </div>
 
                   <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-50 text-[#9A7B1C] border border-amber-200 font-medium">
-                    {item.badge}
+                    {getLocalizedBadge(item, lang)}
                   </span>
                 </div>
 

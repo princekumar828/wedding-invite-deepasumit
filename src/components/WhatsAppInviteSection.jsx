@@ -21,7 +21,11 @@ export default function WhatsAppInviteSection({ lang }) {
     const greeting = clean ? `आदरणीय ${clean} जी,\n\n` : '';
 
     return `${greeting}॥ श्री गणेशाय नमः ॥
-॥ मंगलम् भगवान विष्णुः मंगलम् गरूड़ ध्वजः ॥
+वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ।
+निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा॥
+
+॥ मंगलम् भगवान विष्णुः मंगलम् गरूड़ध्वजः।
+मंगलम् पुण्डरीकाक्षः मंगलाय तनो हरिः॥
 
 *मांगलिक वैवाहिक आमंत्रण*
 
@@ -30,6 +34,7 @@ export default function WhatsAppInviteSection({ lang }) {
 *आयुष्मती दीपा साहू*
 संग
 *चिरंजीवी सुमित प्रसाद*
+(सुपुत्र: श्रीमती रीता देवी एवं श्री रमेश प्रसाद, आन, चंदवा)
 के पावन वैवाहिक परिणय की मांगलिक बेला पर आप सपरिवार सादर आमंत्रित हैं।
 
 ━━━━━━━━━━━━━━━━━━━━
@@ -38,10 +43,10 @@ export default function WhatsAppInviteSection({ lang }) {
 ━━━━━━━━━━━━━━━━━━━━
 
 ✨ *मांगलिक वैवाहिक कार्यक्रम:*
-• 20 जन: शुभ तिलकोत्सव (वर पक्ष निवास, चंदवा)
-• 23 जन: मण्डपाच्छादन एवं हल्दी (देवाकी)
-• 24 जन: घृतढारी, मेहन्दी एवं संगीत (देवाकी)
-• 25 जन: बारात आगमन एवं शुभ-विवाह (उत्सव बैंक्वेट हॉल, घाघरा)
+• 20 जनवरी: शुभ तिलकोत्सव (दिन में - वर पक्ष निवास, आन, चंदवा)
+• 23 जनवरी: मण्डपाच्छादन एवं हल्दी (देवाकी)
+• 24 जनवरी: घृतढारी, मेहन्दी एवं संगीत (देवाकी)
+• 25 जनवरी: बारात आगमन एवं शुभ-विवाह (उत्सव बैंक्वेट हॉल, घाघरा)
 
 "मिलन है दो परिवारों का, रस्म है खुशी मनाने का,
 हमें तो इंतजार है, शादी में आपके आने का ॥"
@@ -52,7 +57,7 @@ ${websiteUrl}
 निवेदक:
 श्रीमती सुनिता देवी एवं श्री दिलीप साहू
 एवं समस्त साहू परिवार, देवाकी (घाघरा)
-📞 9304845132, 6204177370, 9308411143`;
+📞 संपर्क सूत्र: +91 9304845132, +91 6204177370, +91 9308411143`;
   };
 
   // Clean, respectful invitation message in English (NO stars on guest name)
@@ -61,34 +66,41 @@ ${websiteUrl}
     const greeting = clean ? `Dear ${clean},\n\n` : '';
 
     return `${greeting}॥ Shri Ganeshaya Namah ॥
+Vakratunda Mahakaya Suryakoti Samaprabha ।
+Nirvighnam Kuru Me Deva Sarvakaryeshu Sarvada ॥
 
-*Wedding Invitation*
+Mangalam Bhagwan Vishnuh Mangalam Garudadhwajah ।
+Mangalam Pundarikakshah Mangalaya Tano Harih ॥
 
-With the divine grace of God and blessings of our elders, we cordially invite you with family to celebrate the sacred wedding of
+*Sacred Wedding Invitation*
+
+Dear Family & Friends,
+With the divine grace of Almighty God and blessings of our beloved elders, we cordially invite you with family to grace the auspicious wedding celebration of our beloved daughter
 *Ayushmati Deepa Sahu*
-&
+with
 *Chiranjeevi Sumit Prasad*
+(S/o Smt. Rita Devi & Shri Ramesh Prasad, Aan, Chandwa)
 
 ━━━━━━━━━━━━━━━━━━━━
 📅 *Wedding Date:* January 25, 2027 (Monday)
 📍 *Venue:* Utsav Banquet Hall, Chandni Chowk, Ghaghra (Gumla)
 ━━━━━━━━━━━━━━━━━━━━
 
-✨ *Ceremony Schedule:*
-• Jan 20 (Wed): Tilak Ceremony (Groom's Residence, Chandwa)
-• Jan 23 (Sat): Mandap & Haldi (Devaki)
-• Jan 24 (Sun): Mehendi & Sangeet (Devaki)
-• Jan 25 (Mon): Baraat & Shubha Vivah (Utsav Banquet Hall, Ghaghra)
+✨ *Auspicious Ceremony Schedule:*
+• Jan 20 (Wed): Tilak Ceremony (Daytime - Groom's Residence, Aan, Chandwa)
+• Jan 23 (Sat): Mandapachhadan & Haldi (Devaki)
+• Jan 24 (Sun): Ghritdhari, Mehendi & Sangeet (Devaki)
+• Jan 25 (Mon): Baraat Arrival & Shubha Vivah (Utsav Banquet Hall, Ghaghra)
 
-"Two souls, one sacred journey of eternal love..."
+"Two souls unite in sacred bonds of love, culture, and togetherness..."
 
-💌 *View Digital Invitation, Venue Map & Schedule:*
+💌 *View Digital Invitation, Venue Route & Event Details:*
 ${websiteUrl}
 
 Warmly Invited By:
 Smt. Sunita Devi & Shri Dilip Sahu
-& The Sahu Family, Devaki (Ghaghra)
-📞 +91 9304845132, +91 6204177370, +91 9308411143`;
+& The Entire Sahu Family, Devaki (Ghaghra)
+📞 Host Contacts: +91 9304845132, +91 6204177370, +91 9308411143`;
   };
 
   const currentMessage = lang === 'hi' ? getHindiMessage(guestName) : getEnglishMessage(guestName);

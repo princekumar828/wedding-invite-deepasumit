@@ -276,10 +276,38 @@ export const weddingData = {
       summary: "चाचागण, भाईगण, भगिनी एवं समस्त साहू परिवार"
     },
     contacts: [
-      { name: "श्री दिलीप साहू", role: "पिताजी", phone: "9304845132" },
-      { name: "श्री प्रिन्स कुमार", role: "छोटा भाई (अनुज)", phone: "6204177370" },
-      { name: "श्री प्रदीप प्रसाद", role: "चाचा जी", phone: "9308411143" },
-      { name: "श्री अनिल कुमार", role: "चाचा जी", phone: "9304580750" }
+      {
+        name: { hi: "श्री दिलीप साहू", en: "Shri Dilip Sahu" },
+        role: { hi: "पिताजी", en: "Father" },
+        badge: { hi: "👑 मुख्य आयोजक", en: "👑 Chief Host" },
+        phone: "9304845132",
+        avatarLetter: "दि",
+        desc: { hi: "मुख्य स्वागत एवं समन्वय", en: "Chief Host & Coordination" }
+      },
+      {
+        name: { hi: "श्री प्रिन्स कुमार", en: "Shri Prince Kumar" },
+        role: { hi: "छोटा भाई (अनुज)", en: "Younger Brother" },
+        badge: { hi: "🚩 विवाह व्यवस्थापक", en: "🚩 Wedding Coordinator" },
+        phone: "6204177370",
+        avatarLetter: "प्रि",
+        desc: { hi: "व्यवस्था एवं अतिथि समन्वय", en: "Hospitality & Logistics" }
+      },
+      {
+        name: { hi: "श्री प्रदीप प्रसाद", en: "Shri Pradeep Prasad" },
+        role: { hi: "चाचा जी", en: "Uncle (Paternal)" },
+        badge: { hi: "🏛️ परिवार संरक्षक", en: "🏛️ Family Patron" },
+        phone: "9308411143",
+        avatarLetter: "प्र",
+        desc: { hi: "वैवाहिक विधि एवं मंडप सानिध्य", en: "Ceremony & Ritual Guidance" }
+      },
+      {
+        name: { hi: "श्री अनिल कुमार", en: "Shri Anil Kumar" },
+        role: { hi: "चाचा जी", en: "Uncle (Paternal)" },
+        badge: { hi: "🌸 सानिध्य सूत्र", en: "🌸 Host & Guide" },
+        phone: "9304580750",
+        avatarLetter: "अ",
+        desc: { hi: "अतिथि सत्कार एवं भोजन व्यवस्था", en: "Guest Reception & Catering" }
+      }
     ]
   }
 };

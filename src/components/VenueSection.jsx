@@ -90,16 +90,20 @@ export default function VenueSection({ lang }) {
                 {lang === 'hi' ? 'स्थल सहायता संपर्क:' : 'Venue Assistance Contacts:'}
               </span>
               <div className="flex flex-wrap gap-2">
-                {family.contacts.map((c, i) => (
-                  <a
-                    key={i}
-                    href={`tel:${c.phone}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/70 text-xs font-semibold text-[#7A0A15] hover:bg-[#9B111E] hover:text-white transition-all shadow-sm"
-                  >
-                    <Phone className="w-3 h-3 text-[#D4AF37]" />
-                    <span>{c.name} ({c.role ? c.role.split(' ')[0] : ''}): {c.phone}</span>
-                  </a>
-                ))}
+                {family.contacts.map((c, i) => {
+                  const nameStr = typeof c.name === 'object' ? (c.name[lang] || c.name.hi) : c.name;
+                  const roleStr = typeof c.role === 'object' ? (c.role[lang] || c.role.hi) : c.role;
+                  return (
+                    <a
+                      key={i}
+                      href={`tel:${c.phone}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/70 text-xs font-semibold text-[#7A0A15] hover:bg-[#9B111E] hover:text-white transition-all shadow-sm"
+                    >
+                      <Phone className="w-3 h-3 text-[#D4AF37]" />
+                      <span>{nameStr} ({roleStr.split(' ')[0]}): {c.phone}</span>
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
