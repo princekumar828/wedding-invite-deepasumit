@@ -231,8 +231,6 @@ export default function FamilySection({ lang }) {
             {family.contacts.map((c, i) => {
               const nameStr = typeof c.name === 'object' ? (c.name[lang] || c.name.hi) : c.name;
               const roleStr = typeof c.role === 'object' ? (c.role[lang] || c.role.hi) : c.role;
-              const badgeStr = typeof c.badge === 'object' ? (c.badge[lang] || c.badge.hi) : c.badge;
-              const descStr = typeof c.desc === 'object' ? (c.desc[lang] || c.desc.hi) : '';
 
               return (
                 <div
@@ -243,33 +241,20 @@ export default function FamilySection({ lang }) {
                   <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#9B111E] to-[#D4AF37]"></div>
 
                   {/* Medallion Avatar with Initial */}
-                  <div className="relative mt-2 mb-3">
+                  <div className="mt-2 mb-3">
                     <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FFF8E7] via-white to-[#FDE8D0] border-2 border-[#D4AF37] shadow-sm flex items-center justify-center text-lg font-serif font-bold text-[#9B111E] group-hover:scale-105 transition-transform">
                       {c.avatarLetter || nameStr.charAt(0)}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#9B111E] border border-white text-white text-[10px] flex items-center justify-center font-bold">
-                      ✓
-                    </span>
                   </div>
-
-                  {/* Badge */}
-                  <span className="inline-block text-[10px] font-serif font-bold text-[#9A7B1C] bg-amber-50/90 border border-amber-200/90 px-2.5 py-0.5 rounded-full mb-2 tracking-wide shadow-2xs">
-                    {badgeStr}
-                  </span>
 
                   {/* Name & Relation */}
                   <div className="mb-2">
                     <h5 className="text-base font-serif font-bold text-[#4A0E17] leading-snug">
                       {nameStr}
                     </h5>
-                    <span className="text-xs text-[#9B111E] font-serif font-semibold block mt-0.5">
+                    <span className="text-xs text-[#9B111E] font-serif font-semibold block mt-1">
                       {roleStr}
                     </span>
-                    {descStr && (
-                      <p className="text-[10px] text-gray-500 font-serif leading-tight mt-1 px-1">
-                        {descStr}
-                      </p>
-                    )}
                   </div>
 
                   {/* Phone Pill */}
