@@ -14,7 +14,8 @@ import Footer from './components/Footer';
 import RsvpModal from './components/RsvpModal';
 import FloatingFlowerShower, { triggerFlowerShower } from './components/FlowerShower';
 import { TraditionalToran } from './components/TraditionalMotifs';
-import { recordVisit } from './lib/supabase';
+import AdminDashboard from './components/admin/AdminDashboard';
+import { recordVisit, getLocalNotice } from './lib/supabase';
 import { Calendar, MapPin, Heart, MessageSquareHeart, Flower2, MessageCircle } from 'lucide-react';
 
 export default function App() {
@@ -22,16 +23,69 @@ export default function App() {
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
   const [isRsvpOpen, setIsRsvpOpen] = useState(false);
 
+  // Admin Route state (supports /admin, #admin, or query param)
+  const [isAdminView, setIsAdminView] = useState(() => {
+    return (
+      window.location.pathname.startsWith('/admin') ||
+      window.location.hash === '#admin' ||
+      window.location.search.includes('admin=true')
+    );
+  });
+
+  // Live Announcement Ticker Notice
+  const [notice, setNotice] = useState(getLocalNotice());
+
   // Audio Hook (controls auspicious background music)
   const { isPlaying, playMusic, toggleMusic } = useAudio();
 
   // Log unique visit anonymously on first load
   useEffect(() => {
     recordVisit();
+
+    const handleRouteChange = () => {
+      setIsAdminView(
+        window.location.pathname.startsWith('/admin') ||
+        window.location.hash === '#admin' ||
+        window.location.search.includes('admin=true')
+      );
+      setNotice(getLocalNotice());
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+      window.removeEventListener('hashchange', handleRouteChange);
+    };
   }, []);
+
+  // If in Admin Dashboard view
+  if (isAdminView) {
+    return (
+      <AdminDashboard
+        onBackToSite={() => {
+          if (window.location.pathname.startsWith('/admin')) {
+            window.history.pushState({}, '', '/');
+          } else {
+            window.location.hash = '';
+          }
+          setIsAdminView(false);
+          setNotice(getLocalNotice());
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF7F0] text-[#4A0E17] font-sans relative selection:bg-[#9B111E] selection:text-white">
+      {/* Live Announcement Banner Ticker */}
+      {notice?.enabled && notice?.text && (
+        <div className="bg-gradient-to-r from-amber-600 via-[#9B111E] to-amber-700 text-white text-xs font-serif font-bold py-2 px-4 text-center sticky top-0 z-50 shadow-md flex items-center justify-center gap-2 animate-fade-in">
+          <span className="text-sm">📢</span>
+          <span>{notice.text}</span>
+        </div>
+      )}
+
       {/* 1. Floating Auspicious Flower Petals Canvas */}
       <PetalCanvas />
 
