@@ -103,9 +103,27 @@ function getClientDeviceInfo() {
 }
 
 /**
- * Record a unique visit and update stats
+ * Record a unique visit and update stats (Session-deduplicated)
  */
 export async function recordVisit() {
+  if (typeof window !== 'undefined') {
+    // 1. Never record visits when on admin portal
+    const isAdmin =
+      window.location.pathname.startsWith('/admin') ||
+      window.location.hash === '#admin' ||
+      window.location.search.includes('admin=true');
+    if (isAdmin) {
+      return { success: true, skipped: 'admin' };
+    }
+
+    // 2. Prevent repeated increments on page refresh (deduplicate by session)
+    const alreadyRecordedInSession = sessionStorage.getItem('ds_visit_recorded');
+    if (alreadyRecordedInSession) {
+      return { success: true, skipped: 'session_already_counted' };
+    }
+    sessionStorage.setItem('ds_visit_recorded', 'true');
+  }
+
   const visitorId = getOrCreateVisitorId();
   const info = getClientDeviceInfo();
 
@@ -153,6 +171,9 @@ export async function recordVisit() {
 export async function resetVisitCount() {
   localStorage.setItem('ds_local_visits', '0');
   localStorage.removeItem('ds_detailed_visitors');
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem('ds_visit_recorded');
+  }
 
   if (isSupabaseConfigured && supabase) {
     try {
