@@ -50,6 +50,9 @@ export default function Footer({ lang, onReplayEnvelope }) {
               ? 'साहू परिवार द्वारा सस्नेह आमंत्रण'
               : 'Warmly hosted by the Sahu Family'}
           </p>
+          <span className="text-[11px] text-[#D4AF37]/80 tracking-wide font-serif">
+            Deepa Weds Sumit • Sumit Deepa • deepasumit.in
+          </span>
           <div className="flex items-center gap-1.5 text-[#F5D77F]">
             <span>सदा सुमंगलम्</span>
             <Heart className="w-3 h-3 text-rose-400 fill-rose-400" />
