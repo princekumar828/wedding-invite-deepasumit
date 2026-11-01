@@ -30,19 +30,26 @@ import {
   Activity,
   RotateCcw,
   TrendingUp,
-  Radio
+  Radio,
+  Edit2,
+  Save,
+  X
 } from 'lucide-react';
 import {
   fetchAdminRsvps,
   deleteAdminRsvp,
+  updateAdminRsvp,
   fetchAdminWishes,
   deleteAdminWish,
+  updateAdminWish,
+  submitWish,
   getLiveStats,
   fetchRecentVisits,
   submitRsvp,
   getLocalNotice,
   saveLocalNotice,
-  resetVisitCount
+  resetVisitCount,
+  setFlowerCount
 } from '../../lib/supabase';
 
 const VALID_PINS = ['2501', '250127', 'deepasumit', '77370'];
@@ -72,11 +79,21 @@ export default function AdminDashboard({ onBackToSite }) {
 
   // Manual RSVP Modal / Form
   const [showAddRsvp, setShowAddRsvp] = useState(false);
+  const [editingRsvp, setEditingRsvp] = useState(null);
   const [manualForm, setManualForm] = useState({
     name: '',
     phone: '',
     guestCount: 2,
     attending: true,
+    message: ''
+  });
+
+  // Wishes CRUD state
+  const [showAddWish, setShowAddWish] = useState(false);
+  const [editingWish, setEditingWish] = useState(null);
+  const [newWishForm, setNewWishForm] = useState({
+    name: '',
+    relation: 'शुभचिंतक',
     message: ''
   });
 
@@ -284,6 +301,61 @@ export default function AdminDashboard({ onBackToSite }) {
     setShowAddRsvp(false);
     setManualForm({ name: '', phone: '', guestCount: 2, attending: true, message: '' });
     loadData();
+  };
+
+  // Handle Update RSVP (Full CRUD Update)
+  const handleUpdateRsvp = async (e) => {
+    e.preventDefault();
+    if (!editingRsvp) return;
+    await updateAdminRsvp(editingRsvp.id, {
+      name: editingRsvp.name,
+      phone: editingRsvp.phone,
+      attending: editingRsvp.attending,
+      guest_count: parseInt(editingRsvp.guest_count, 10) || 1,
+      message: editingRsvp.message
+    });
+    setRsvps((prev) =>
+      prev.map((r) => (r.id === editingRsvp.id ? { ...r, ...editingRsvp } : r))
+    );
+    setEditingRsvp(null);
+  };
+
+  // Handle Add Wish (Full CRUD Create)
+  const handleAddWish = async (e) => {
+    e.preventDefault();
+    if (!newWishForm.name || !newWishForm.message) return;
+    const res = await submitWish(newWishForm);
+    if (res.success && res.data) {
+      setWishes((prev) => [res.data, ...prev]);
+    }
+    setShowAddWish(false);
+    setNewWishForm({ name: '', relation: 'शुभचिंतक', message: '' });
+  };
+
+  // Handle Update Wish (Full CRUD Update)
+  const handleUpdateWish = async (e) => {
+    e.preventDefault();
+    if (!editingWish) return;
+    await updateAdminWish(editingWish.id, {
+      name: editingWish.name,
+      relation: editingWish.relation,
+      message: editingWish.message
+    });
+    setWishes((prev) =>
+      prev.map((w) => (w.id === editingWish.id ? { ...w, ...editingWish } : w))
+    );
+    setEditingWish(null);
+  };
+
+  // Handle Flower Count Reset or Custom Value
+  const handleResetFlowers = async () => {
+    const val = window.prompt('पुष्प वर्षा (Flower count) की संख्या सेट करें (उदा. 0 या कोई अन्य संख्या):', '0');
+    if (val !== null) {
+      const num = parseInt(val, 10) || 0;
+      await setFlowerCount(num);
+      setStats((prev) => ({ ...prev, flower_count: num }));
+      alert(`पुष्प वर्षा संख्या को ${num} पर सेट कर दिया गया है!`);
+    }
   };
 
   // CSV Export for Banquet / Halwai Catering
@@ -520,17 +592,30 @@ ${salutation},
           <div className="space-y-6 animate-fade-in">
             {/* Top 4 KPI Metrics */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-5 rounded-2xl border border-[#D4AF37]/50 shadow-sm relative overflow-hidden">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-serif font-bold text-gray-500 uppercase">
-                    🌸 पुष्प वर्षा
-                  </span>
-                  <Flower2 className="w-5 h-5 text-amber-500" />
+              <div className="bg-white p-5 rounded-2xl border border-[#D4AF37]/50 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-serif font-bold text-gray-500 uppercase">
+                      🌸 पुष्प वर्षा
+                    </span>
+                    <Flower2 className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-bold text-[#4A0E17] font-mono">
+                    {stats.flower_count?.toLocaleString('en-IN') || 0}
+                  </div>
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-[#4A0E17] font-mono">
-                  {stats.flower_count?.toLocaleString('en-IN') || 0}
+
+                <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                  <span className="text-[10px] text-gray-500">कुल वर्षा</span>
+                  <button
+                    onClick={handleResetFlowers}
+                    className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md border border-amber-200 transition-colors"
+                    title="पुष्प वर्षा काउंट सेट / रीसेट करें"
+                  >
+                    <Edit2 className="w-2.5 h-2.5" />
+                    <span>सेट करें</span>
+                  </button>
                 </div>
-                <span className="text-[11px] text-gray-500 mt-1 block">मेहमानों द्वारा की गई कुल वर्षा</span>
               </div>
 
               <div className="bg-white p-5 rounded-2xl border border-[#D4AF37]/50 shadow-sm relative overflow-hidden flex flex-col justify-between">
@@ -1138,7 +1223,14 @@ ${salutation},
                           <td className="p-3 font-mono text-[10px] text-gray-400">
                             {new Date(r.created_at || Date.now()).toLocaleDateString('hi-IN')}
                           </td>
-                          <td className="p-3 text-right">
+                          <td className="p-3 text-right whitespace-nowrap">
+                            <button
+                              onClick={() => setEditingRsvp({ ...r })}
+                              title="एडिट करें (Edit RSVP)"
+                              className="p-1.5 rounded-lg text-gray-500 hover:text-amber-700 hover:bg-amber-50 transition-colors mr-1"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               onClick={() => handleDeleteRsvp(r.id, r.name)}
                               title="डिलीट करें"
@@ -1154,13 +1246,109 @@ ${salutation},
                 </div>
               )}
             </div>
+
+            {/* EDIT RSVP MODAL (Full CRUD Update) */}
+            {editingRsvp && (
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl border-2 border-[#D4AF37] p-6 max-w-md w-full shadow-2xl animate-fade-in relative">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+                    <h4 className="font-serif font-bold text-base text-[#4A0E17] flex items-center gap-2">
+                      <Edit2 className="w-4 h-4 text-[#D4AF37]" />
+                      <span>अतिथि RSVP संपादित करें (Edit RSVP)</span>
+                    </h4>
+                    <button
+                      onClick={() => setEditingRsvp(null)}
+                      className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleUpdateRsvp} className="space-y-3.5 text-xs">
+                    <div>
+                      <label className="font-semibold text-gray-700 block mb-1">अतिथि का नाम *</label>
+                      <input
+                        type="text"
+                        required
+                        value={editingRsvp.name}
+                        onChange={(e) => setEditingRsvp({ ...editingRsvp, name: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none focus:border-[#9B111E]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-gray-700 block mb-1">फ़ोन नंबर</label>
+                      <input
+                        type="tel"
+                        value={editingRsvp.phone || ''}
+                        onChange={(e) => setEditingRsvp({ ...editingRsvp, phone: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none focus:border-[#9B111E]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="font-semibold text-gray-700 block mb-1">उपस्थिति (Status)</label>
+                        <select
+                          value={editingRsvp.attending ? 'true' : 'false'}
+                          onChange={(e) => setEditingRsvp({ ...editingRsvp, attending: e.target.value === 'true' })}
+                          className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none bg-white"
+                        >
+                          <option value="true">✓ आ रहे हैं (Attending)</option>
+                          <option value="false">✗ असमर्थ (Not Attending)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="font-semibold text-gray-700 block mb-1">सदस्य संख्या (Headcount)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={editingRsvp.guest_count || 1}
+                          onChange={(e) => setEditingRsvp({ ...editingRsvp, guest_count: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-gray-700 block mb-1">टिप्पणी / संदेश</label>
+                      <textarea
+                        rows="2"
+                        value={editingRsvp.message || ''}
+                        onChange={(e) => setEditingRsvp({ ...editingRsvp, message: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none resize-none"
+                      ></textarea>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2">
+                      <button
+                        type="submit"
+                        className="flex-1 py-2.5 rounded-xl bg-[#9B111E] text-white font-bold hover:bg-[#7A0A15] shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        <Save className="w-3.5 h-3.5 text-[#F5D77F]" />
+                        <span>अपडेट करें (Save Changes)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingRsvp(null)}
+                        className="py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold"
+                      >
+                        रद्द
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* ===================== TAB 3: WISHES ===================== */}
         {activeTab === 'wishes' && (
           <div className="space-y-4 animate-fade-in">
-            <div className="flex items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#D4AF37]/50 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#D4AF37]/50 shadow-sm">
               <div className="relative flex-1 max-w-md">
                 <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -1171,10 +1359,86 @@ ${salutation},
                   className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-300 outline-none"
                 />
               </div>
-              <span className="text-xs font-serif text-gray-600">
-                कुल संदेश: <strong>{wishes.length}</strong>
-              </span>
+
+              <div className="flex items-center gap-3 justify-between">
+                <span className="text-xs font-serif text-gray-600">
+                  कुल संदेश: <strong>{wishes.length}</strong>
+                </span>
+
+                <button
+                  onClick={() => setShowAddWish(!showAddWish)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 shadow-sm shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>नई शुभकामना जोड़ें</span>
+                </button>
+              </div>
             </div>
+
+            {/* CREATE WISH FORM (Full CRUD Create) */}
+            {showAddWish && (
+              <form
+                onSubmit={handleAddWish}
+                className="bg-[#FFFDF9] p-5 rounded-2xl border-2 border-purple-300 shadow-md grid sm:grid-cols-2 gap-3 animate-fade-in"
+              >
+                <div>
+                  <label className="text-xs font-semibold text-gray-700 block mb-1">
+                    शुभचिंतक का नाम *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="उदा. श्री अजय कुमार"
+                    value={newWishForm.name}
+                    onChange={(e) => setNewWishForm({ ...newWishForm, name: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-gray-300 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-gray-700 block mb-1">
+                    रिश्ता / संबंध
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="उदा. मामा जी / मित्र / पारिवारिक सदस्य"
+                    value={newWishForm.relation}
+                    onChange={(e) => setNewWishForm({ ...newWishForm, relation: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-gray-300 outline-none"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-semibold text-gray-700 block mb-1">
+                    आशीर्वाद संदेश *
+                  </label>
+                  <textarea
+                    rows="2"
+                    required
+                    placeholder="वर-वधू के लिए मंगलकामनाएं..."
+                    value={newWishForm.message}
+                    onChange={(e) => setNewWishForm({ ...newWishForm, message: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-gray-300 outline-none resize-none"
+                  ></textarea>
+                </div>
+
+                <div className="sm:col-span-2 flex items-center justify-end gap-2 pt-1">
+                  <button
+                    type="submit"
+                    className="py-2 px-4 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs shadow-sm"
+                  >
+                    सहेजें (Publish Wish)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddWish(false)}
+                    className="py-2 px-3 rounded-xl bg-gray-200 text-gray-700 font-semibold text-xs"
+                  >
+                    रद्द
+                  </button>
+                </div>
+              </form>
+            )}
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredWishes.map((w) => (
@@ -1192,13 +1456,22 @@ ${salutation},
                           {w.relation || 'शुभचिंतक'}
                         </span>
                       </div>
-                      <button
-                        onClick={() => handleDeleteWish(w.id, w.name)}
-                        title="हटाएं"
-                        className="text-gray-400 hover:text-rose-600 p-1 rounded-md"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => setEditingWish({ ...w })}
+                          title="संपादित करें (Edit Wish)"
+                          className="text-gray-400 hover:text-amber-700 hover:bg-amber-50 p-1 rounded-md transition-colors"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteWish(w.id, w.name)}
+                          title="हटाएं"
+                          className="text-gray-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-md transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-xs text-gray-700 italic font-serif leading-relaxed bg-[#FAF7F0] p-3 rounded-xl border border-[#D4AF37]/20">
@@ -1223,6 +1496,77 @@ ${salutation},
                 </div>
               ))}
             </div>
+
+            {/* EDIT WISH MODAL (Full CRUD Update) */}
+            {editingWish && (
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl border-2 border-[#D4AF37] p-6 max-w-md w-full shadow-2xl animate-fade-in relative">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+                    <h4 className="font-serif font-bold text-base text-[#4A0E17] flex items-center gap-2">
+                      <Edit2 className="w-4 h-4 text-[#D4AF37]" />
+                      <span>शुभकामना संदेश संपादित करें (Edit Wish)</span>
+                    </h4>
+                    <button
+                      onClick={() => setEditingWish(null)}
+                      className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleUpdateWish} className="space-y-3.5 text-xs">
+                    <div>
+                      <label className="font-semibold text-gray-700 block mb-1">शुभचिंतक का नाम *</label>
+                      <input
+                        type="text"
+                        required
+                        value={editingWish.name}
+                        onChange={(e) => setEditingWish({ ...editingWish, name: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none focus:border-[#9B111E]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-gray-700 block mb-1">रिश्ता / संबंध</label>
+                      <input
+                        type="text"
+                        value={editingWish.relation || ''}
+                        onChange={(e) => setEditingWish({ ...editingWish, relation: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none focus:border-[#9B111E]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-gray-700 block mb-1">शुभकामना संदेश *</label>
+                      <textarea
+                        rows="3"
+                        required
+                        value={editingWish.message}
+                        onChange={(e) => setEditingWish({ ...editingWish, message: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-gray-300 outline-none resize-none"
+                      ></textarea>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2">
+                      <button
+                        type="submit"
+                        className="flex-1 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        <Save className="w-3.5 h-3.5 text-[#F5D77F]" />
+                        <span>सुरक्षित करें (Update Wish)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingWish(null)}
+                        className="py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold"
+                      >
+                        रद्द
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
