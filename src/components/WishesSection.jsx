@@ -31,24 +31,24 @@ const initialWishes = [
   {
     id: 4,
     name: "प्रिन्स",
-    relationship: "भाई",
-    message: "दीदी, आपके नए सफर की शुरुआत पर ढेर सारा प्यार और शुभकामनाएं! सुमित भैया, हमारी दीदी का हमेशा ख्याल रखिएगा। आप दोनों को बहुत-बहुत बधाई!",
+    relationship: "छोटा भाई (Younger Brother)",
+    message: "दीदी, आपके नए सफर की शुरुआत पर ढेर सारा प्यार और शुभकामनाएं! सुमित जीजा जी, हमारी दीदी का हमेशा ख्याल रखिएगा। आप दोनों को बहुत-बहुत बधाई!",
     date: "November 2026",
-    badge: "भाई का प्यार"
+    badge: "छोटे भाई का स्नेह"
   },
   {
     id: 5,
     name: "सौरभ एवं समस्त भाई (सुशांत, अंकित, अमन, अर्पित, चिराग)",
-    relationship: "भाईगण",
+    relationship: "छोटे भाई (Younger Brothers)",
     message: "दीदी और जीजाजी को शुभ विवाह की अनंत मंगलकामनाएं! हम सब भाइयों की तरफ से दोनों को जीवन भर का प्यार और खुशियां।",
     date: "November 2026",
-    badge: "भाईयों की ओर से"
+    badge: "छोटे भाइयों का स्नेह"
   },
   {
     id: 6,
     name: "रूबी एवं रूची",
     relationship: "बहने",
-    message: "दीदी और सुमित भैया को वैवाहिक जीवन की ढेरों शुभकामनाएं! हमारी दीदी की शादी सबसे यादगार और खुशहाल होगी!",
+    message: "दीदी और सुमित जीजू को वैवाहिक जीवन की ढेरों शुभकामनाएं! हमारी दीदी की शादी सबसे यादगार और खुशहाल होगी!",
     date: "November 2026",
     badge: "लाडली बहने"
   }
@@ -73,6 +73,10 @@ const quickTemplates = {
 
 const relationshipOptions = [
   { value: "पारिवारिक सदस्य (Family Member)", labelHi: "पारिवारिक सदस्य", labelEn: "Family Member" },
+  { value: "छोटा भाई (Younger Brother)", labelHi: "छोटा भाई (अनुज)", labelEn: "Younger Brother" },
+  { value: "बड़ा भाई (Elder Brother)", labelHi: "बड़ा भाई (अग्रज)", labelEn: "Elder Brother" },
+  { value: "छोटी बहन (Younger Sister)", labelHi: "छोटी बहन (अनुजा)", labelEn: "Younger Sister" },
+  { value: "बड़ी बहन (Elder Sister)", labelHi: "बड़ी बहन", labelEn: "Elder Sister" },
   { value: "चाचा / चाची (Uncle / Aunt)", labelHi: "चाचा / चाची", labelEn: "Uncle / Aunt" },
   { value: "मामा / मामी (Maternal Uncle / Aunt)", labelHi: "मामा / मामी", labelEn: "Maternal Uncle / Aunt" },
   { value: "फुआ / फूफा (Aunt & Uncle)", labelHi: "फुआ / फूफा", labelEn: "Aunt & Uncle" },
@@ -89,8 +93,9 @@ export default function WishesSection({ lang }) {
       // Clear legacy test keys from previous testing
       localStorage.removeItem('deepa_sumit_wishes');
       localStorage.removeItem('deepa_sumit_wishes_v2');
+      localStorage.removeItem('deepa_sumit_wishes_v4');
 
-      const saved = localStorage.getItem('deepa_sumit_wishes_v4');
+      const saved = localStorage.getItem('deepa_sumit_wishes_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         // Filter out any stray test messages
