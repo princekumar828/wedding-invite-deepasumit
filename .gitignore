@@ -28,3 +28,11 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Credentials & Keys
+*.pem
+*.key
+*.cert
+*.token
+*.credentials
+
