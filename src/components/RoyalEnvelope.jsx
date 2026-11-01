@@ -61,8 +61,10 @@ export default function RoyalEnvelope({ onOpen, lang }) {
 
         {/* Clean Couple Name */}
         <div className="mb-6 space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#4A0E17]">
-            दीपा <span className="text-[#9B111E] font-normal text-2xl sm:text-3xl">&</span> सुमित
+          <h1 className={`text-3xl sm:text-4xl ${lang === 'hi' ? 'font-devanagari font-normal' : 'font-cinzel font-bold'} text-[#7A0A15]`}>
+            {lang === 'hi' ? 'दीपा' : 'Deepa'}
+            <span className="text-[#D4AF37] font-serif font-light text-2xl sm:text-3xl mx-2">&</span>
+            {lang === 'hi' ? 'सुमित' : 'Sumit'}
           </h1>
 
           <p className="text-xs sm:text-sm font-serif font-semibold text-[#9A7B1C] tracking-widest">

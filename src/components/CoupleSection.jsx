@@ -67,7 +67,7 @@ export default function CoupleSection({ lang }) {
                 <span className="text-xs text-[#9A7B1C] font-semibold tracking-widest uppercase block font-serif">
                   {bride[lang].prefix}
                 </span>
-                <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#4A0E17] mt-0.5">
+                <h3 className={`text-3xl sm:text-4xl ${lang === 'hi' ? 'font-devanagari tracking-wide font-normal' : 'font-cinzel font-bold'} text-[#7A0A15] mt-1`}>
                   {bride[lang].name}
                 </h3>
                 <span className="inline-block h-0.5 w-16 bg-[#D4AF37] mt-1"></span>
@@ -133,7 +133,7 @@ export default function CoupleSection({ lang }) {
                 <span className="text-xs text-[#9A7B1C] font-semibold tracking-widest uppercase block font-serif">
                   {groom[lang].prefix}
                 </span>
-                <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#4A0E17] mt-0.5">
+                <h3 className={`text-3xl sm:text-4xl ${lang === 'hi' ? 'font-devanagari tracking-wide font-normal' : 'font-cinzel font-bold'} text-[#7A0A15] mt-1`}>
                   {groom[lang].name}
                 </h3>
                 <span className="inline-block h-0.5 w-16 bg-[#D4AF37] mt-1"></span>

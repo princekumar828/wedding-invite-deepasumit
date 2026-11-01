@@ -81,12 +81,16 @@ export default function HeroSection({ lang, onOpenRsvp }) {
             {lang === 'hi' ? '॥ शुभ परिणय ॥' : 'The Sacred Union'}
           </p>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-[#4A0E17] leading-tight">
-            {weddingData.couple.bride[lang].name}
-            <span className="block sm:inline sm:mx-3 text-2xl sm:text-4xl text-[#9B111E] font-normal font-serif">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-[#4A0E17] leading-tight my-2">
+            <span className={`${lang === 'hi' ? 'font-devanagari tracking-wide' : 'font-cinzel font-bold'} text-[#7A0A15]`}>
+              {weddingData.couple.bride[lang].name}
+            </span>
+            <span className="inline-block mx-2 sm:mx-3 text-2xl sm:text-4xl text-[#D4AF37] font-serif font-light align-middle">
               {lang === 'hi' ? 'संग' : '&'}
             </span>
-            {weddingData.couple.groom[lang].name}
+            <span className={`${lang === 'hi' ? 'font-devanagari tracking-wide' : 'font-cinzel font-bold'} text-[#7A0A15]`}>
+              {weddingData.couple.groom[lang].name}
+            </span>
           </h1>
 
           <p className="text-sm sm:text-base text-gray-700 max-w-lg mx-auto font-serif">

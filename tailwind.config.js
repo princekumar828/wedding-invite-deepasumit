@@ -28,7 +28,9 @@ export default {
       },
       fontFamily: {
         devanagari: ['"Rozha One"', '"Martel"', 'serif'],
+        yatra: ['"Yatra One"', 'cursive'],
         cinzel: ['"Cinzel Decorative"', '"Cinzel"', 'serif'],
+        script: ['"Great Vibes"', 'cursive'],
         serif: ['"Playfair Display"', 'serif'],
         sans: ['"Poppins"', '"Plus Jakarta Sans"', 'sans-serif'],
       },
