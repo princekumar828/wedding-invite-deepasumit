@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { Heart, Sparkles, MapPin } from 'lucide-react';
+import React from 'react';
+import { Heart, Sparkles, MapPin, Flower2 } from 'lucide-react';
 import { weddingData } from '../data/weddingData';
 import { RoyalBrideCrest, RoyalGroomCrest, SacredGathbandhan } from './TraditionalMotifs';
 
 export default function CoupleSection({ lang }) {
   const { bride, groom } = weddingData.couple;
-  const [brideImgError, setBrideImgError] = useState(false);
-  const [groomImgError, setGroomImgError] = useState(false);
 
   return (
     <section id="couple" className="py-16 px-4 bg-gradient-to-b from-[#FAF7F0] via-white to-[#FAF7F0] relative overflow-hidden">
@@ -57,28 +55,11 @@ export default function CoupleSection({ lang }) {
                 </span>
               </div>
 
-              {/* Bride Avatar (Direct 3D with Traditional Fallback) */}
-              <div className="flex justify-center my-4">
-                {!brideImgError ? (
-                  <div className="relative group/avatar cursor-pointer">
-                    <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-b from-[#D4AF37] via-[#FFFDF9] to-[#9B111E] shadow-royal hover:shadow-gold-glow transition-all duration-500 overflow-hidden transform group-hover/avatar:scale-105">
-                      <img
-                        src="/avatars/bride_3d.png"
-                        alt="Deepa Sahu"
-                        onError={() => setBrideImgError(true)}
-                        className="w-full h-full object-cover object-top scale-110"
-                      />
-                    </div>
-                    {/* Auspicious Lotus Badge */}
-                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#9B111E] text-[#FEF3C7] text-[10px] font-serif font-bold px-3 py-0.5 rounded-full border border-[#D4AF37] shadow-md tracking-wider whitespace-nowrap">
-                      {lang === 'hi' ? 'सौभाग्यवती' : 'Beloved Bride'}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="relative p-1.5 rounded-full bg-gradient-to-b from-[#FAF7F0] to-rose-50 border-2 border-[#D4AF37] shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                    <RoyalBrideCrest className="w-28 h-28 sm:w-32 sm:h-32" />
-                  </div>
-                )}
+              {/* Royal Bride Illustration Crest */}
+              <div className="flex justify-center my-3">
+                <div className="relative p-1.5 rounded-full bg-gradient-to-b from-[#FAF7F0] to-rose-50 border-2 border-[#D4AF37] shadow-sm transform group-hover:scale-105 transition-transform duration-300">
+                  <RoyalBrideCrest className="w-28 h-28 sm:w-32 sm:h-32" />
+                </div>
               </div>
 
               {/* Bride Name & Title */}
@@ -140,28 +121,11 @@ export default function CoupleSection({ lang }) {
                 </span>
               </div>
 
-              {/* Groom Avatar (Direct 3D with Traditional Fallback) */}
-              <div className="flex justify-center my-4">
-                {!groomImgError ? (
-                  <div className="relative group/avatar cursor-pointer">
-                    <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-b from-[#D4AF37] via-[#FFFDF9] to-[#7A0A15] shadow-royal hover:shadow-gold-glow transition-all duration-500 overflow-hidden transform group-hover/avatar:scale-105">
-                      <img
-                        src="/avatars/groom_3d.png"
-                        alt="Sumit Prasad"
-                        onError={() => setGroomImgError(true)}
-                        className="w-full h-full object-cover object-top scale-110"
-                      />
-                    </div>
-                    {/* Auspicious Groom Crown Badge */}
-                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#7A0A15] text-[#FEF3C7] text-[10px] font-serif font-bold px-3 py-0.5 rounded-full border border-[#D4AF37] shadow-md tracking-wider whitespace-nowrap">
-                      {lang === 'hi' ? 'वर श्रेष्ठ' : 'Handsome Groom'}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="relative p-1.5 rounded-full bg-gradient-to-b from-[#FAF7F0] to-amber-50 border-2 border-[#D4AF37] shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                    <RoyalGroomCrest className="w-28 h-28 sm:w-32 sm:h-32" />
-                  </div>
-                )}
+              {/* Royal Groom Illustration Crest */}
+              <div className="flex justify-center my-3">
+                <div className="relative p-1.5 rounded-full bg-gradient-to-b from-[#FAF7F0] to-amber-50 border-2 border-[#D4AF37] shadow-sm transform group-hover:scale-105 transition-transform duration-300">
+                  <RoyalGroomCrest className="w-28 h-28 sm:w-32 sm:h-32" />
+                </div>
               </div>
 
               {/* Groom Name & Title */}
@@ -200,14 +164,29 @@ export default function CoupleSection({ lang }) {
 
             <div className="mt-6 pt-4 border-t border-dashed border-[#D4AF37]/50 text-center">
               <span className="text-xs text-[#9B111E] font-serif font-semibold italic">
-                {lang === 'hi' ? '✨ सुयोग्य वर • अखंड सौभाग्य एवं वैभव की प्राप्ति ✨' : '✨ Noble Groom • Blessed with Prosperity ✨'}
+                {lang === 'hi' ? '👑 गुणवान चिरंजीवी वर • यशस्वी भव 👑' : '👑 Noble Groom • Blessed with Honor 👑'}
               </span>
             </div>
           </div>
         </div>
 
-        {/* ================= Sacred Gathbandhan Bridge ================= */}
-        <SacredGathbandhan lang={lang} />
+        {/* Sacred Gathbandhan & Vows Bridge */}
+        <SacredGathbandhan />
+
+        {/* Sisters' Special Affection Note (रूबी, रूची) */}
+        <div className="max-w-2xl mx-auto bg-gradient-to-r from-amber-50 via-rose-50 to-amber-50 p-6 rounded-3xl border-2 border-dashed border-[#D4AF37] text-center shadow-sm mt-6">
+          <div className="flex items-center justify-center gap-2 mb-2 text-[#9B111E]">
+            <Flower2 className="w-4 h-4 text-[#EAA315]" />
+            <span className="text-xs font-semibold uppercase tracking-wider font-serif">
+              {lang === 'hi' ? 'बहनों का स्नेहिल संदेश (रूबी एवं रूची)' : "Sisters' Joyous Message (Ruby & Ruchi)"}
+            </span>
+            <Flower2 className="w-4 h-4 text-[#EAA315]" />
+          </div>
+
+          <p className="font-serif text-base sm:text-lg text-[#7A0A15] font-semibold italic leading-relaxed">
+            {weddingData.quotes.sistersPoem[lang]}
+          </p>
+        </div>
       </div>
     </section>
   );
