@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Heart, Sparkles, MapPin, Palette, Shield } from 'lucide-react';
+import { Heart, Sparkles, MapPin } from 'lucide-react';
 import { weddingData } from '../data/weddingData';
 import { RoyalBrideCrest, RoyalGroomCrest, SacredGathbandhan } from './TraditionalMotifs';
 
 export default function CoupleSection({ lang }) {
   const { bride, groom } = weddingData.couple;
-  const [avatarMode, setAvatarMode] = useState('3d'); // '3d' | 'traditional'
+  const [brideImgError, setBrideImgError] = useState(false);
+  const [groomImgError, setGroomImgError] = useState(false);
 
   return (
     <section id="couple" className="py-16 px-4 bg-gradient-to-b from-[#FAF7F0] via-white to-[#FAF7F0] relative overflow-hidden">
@@ -14,7 +15,7 @@ export default function CoupleSection({ lang }) {
 
       <div className="max-w-5xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-[#9B111E]/10 text-[#9B111E] text-xs font-semibold uppercase tracking-wider mb-3 border border-[#D4AF37]/40 shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>{lang === 'hi' ? 'वैदिक शुभ परिणय' : 'Sacred Vedic Union'}</span>
@@ -31,36 +32,9 @@ export default function CoupleSection({ lang }) {
             <span className="h-[1px] w-14 bg-gradient-to-l from-transparent to-[#D4AF37]"></span>
           </div>
 
-          <p className="text-xs sm:text-sm text-gray-700 max-w-xl mx-auto italic font-serif leading-relaxed mb-5">
+          <p className="text-xs sm:text-sm text-gray-700 max-w-xl mx-auto italic font-serif leading-relaxed">
             "{weddingData.shlokas.vishnu.sanskrit.split('\n').join(' ')}"
           </p>
-
-          {/* Interactive Avatar Style Switcher (3D Pixar Cartoon vs Traditional Art) */}
-          <div className="inline-flex items-center p-1 rounded-full bg-white border border-[#D4AF37]/60 shadow-sm text-xs font-serif">
-            <button
-              onClick={() => setAvatarMode('3d')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-semibold transition-all ${
-                avatarMode === '3d'
-                  ? 'bg-gradient-to-r from-[#9B111E] to-[#7A0A15] text-[#FEF3C7] shadow-sm'
-                  : 'text-gray-600 hover:text-[#9B111E]'
-              }`}
-            >
-              <Palette className="w-3.5 h-3.5 text-[#FEF08A]" />
-              <span>{lang === 'hi' ? '✨ 3D कार्टून अवतार' : '✨ 3D Animated Style'}</span>
-            </button>
-
-            <button
-              onClick={() => setAvatarMode('traditional')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-semibold transition-all ${
-                avatarMode === 'traditional'
-                  ? 'bg-gradient-to-r from-[#9B111E] to-[#7A0A15] text-[#FEF3C7] shadow-sm'
-                  : 'text-gray-600 hover:text-[#9B111E]'
-              }`}
-            >
-              <Shield className="w-3.5 h-3.5 text-[#FEF08A]" />
-              <span>{lang === 'hi' ? '🕉️ पारंपरिक कला' : '🕉️ Traditional Art'}</span>
-            </button>
-          </div>
         </div>
 
         {/* Traditional Royal Couple Cards Grid */}
@@ -83,19 +57,20 @@ export default function CoupleSection({ lang }) {
                 </span>
               </div>
 
-              {/* Bride 3D Avatar or Traditional Crest */}
+              {/* Bride Avatar (Direct 3D with Traditional Fallback) */}
               <div className="flex justify-center my-4">
-                {avatarMode === '3d' ? (
+                {!brideImgError ? (
                   <div className="relative group/avatar cursor-pointer">
                     <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-b from-[#D4AF37] via-[#FFFDF9] to-[#9B111E] shadow-royal hover:shadow-gold-glow transition-all duration-500 overflow-hidden transform group-hover/avatar:scale-105">
                       <img
                         src="/avatars/bride_3d.png"
                         alt="Deepa Sahu"
+                        onError={() => setBrideImgError(true)}
                         className="w-full h-full object-cover object-top scale-110"
                       />
                     </div>
                     {/* Auspicious Lotus Badge */}
-                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#9B111E] text-[#FEF3C7] text-[10px] font-serif font-bold px-3 py-0.5 rounded-full border border-[#D4AF37] shadow-md tracking-wider">
+                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#9B111E] text-[#FEF3C7] text-[10px] font-serif font-bold px-3 py-0.5 rounded-full border border-[#D4AF37] shadow-md tracking-wider whitespace-nowrap">
                       {lang === 'hi' ? 'सौभाग्यवती' : 'Beloved Bride'}
                     </span>
                   </div>
@@ -165,19 +140,20 @@ export default function CoupleSection({ lang }) {
                 </span>
               </div>
 
-              {/* Groom 3D Avatar or Traditional Crest */}
+              {/* Groom Avatar (Direct 3D with Traditional Fallback) */}
               <div className="flex justify-center my-4">
-                {avatarMode === '3d' ? (
+                {!groomImgError ? (
                   <div className="relative group/avatar cursor-pointer">
                     <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-b from-[#D4AF37] via-[#FFFDF9] to-[#7A0A15] shadow-royal hover:shadow-gold-glow transition-all duration-500 overflow-hidden transform group-hover/avatar:scale-105">
                       <img
                         src="/avatars/groom_3d.png"
                         alt="Sumit Prasad"
+                        onError={() => setGroomImgError(true)}
                         className="w-full h-full object-cover object-top scale-110"
                       />
                     </div>
                     {/* Auspicious Groom Crown Badge */}
-                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#7A0A15] text-[#FEF3C7] text-[10px] font-serif font-bold px-3 py-0.5 rounded-full border border-[#D4AF37] shadow-md tracking-wider">
+                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#7A0A15] text-[#FEF3C7] text-[10px] font-serif font-bold px-3 py-0.5 rounded-full border border-[#D4AF37] shadow-md tracking-wider whitespace-nowrap">
                       {lang === 'hi' ? 'वर श्रेष्ठ' : 'Handsome Groom'}
                     </span>
                   </div>
