@@ -243,15 +243,12 @@ export async function incrementFlowerCount() {
   }
 }
 
-// Filter out excluded / deleted wishes
+// Filter out obsolete / merged wishes
 const isExcludedWish = (w) => {
   const text = `${w?.name || ''} ${w?.relation || ''} ${w?.message || ''}`.toLowerCase();
   return (
-    text.includes('vinay') ||
-    text.includes('sarita') ||
-    text.includes('mohit') ||
-    text.includes('anita') ||
-    text.includes('प्रदीप प्रसाद एवं श्री अनिल')
+    text.includes('प्रदीप प्रसाद एवं श्री अनिल') ||
+    text.includes('pradeep prasad and anil')
   );
 };
 

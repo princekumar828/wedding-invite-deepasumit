@@ -22,6 +22,8 @@ const quickTemplates = {
 
 const relationshipOptions = [
   { value: "पारिवारिक सदस्य", labelHi: "पारिवारिक सदस्य", labelEn: "Family Member" },
+  { value: "मौसा जी एवं मौसी जी", labelHi: "मौसा जी एवं मौसी जी", labelEn: "Uncle & Aunt (Mausa & Mausi)" },
+  { value: "मौसा / मौसी", labelHi: "मौसा / मौसी", labelEn: "Mausa / Mausi" },
   { value: "चाचा जी एवं चाची जी", labelHi: "चाचा जी एवं चाची जी", labelEn: "Uncle & Aunt (Chacha & Chachi)" },
   { value: "चाचा / चाची", labelHi: "चाचा / चाची", labelEn: "Uncle / Aunt" },
   { value: "छोटा भाई (अनुज)", labelHi: "छोटा भाई (अनुज)", labelEn: "Younger Brother" },
@@ -63,6 +65,9 @@ const getLocalizedBadge = (item, lang) => {
   if (rel.includes('फूफा') || rel.includes('फुआ')) {
     return lang === 'hi' ? 'फूफा-फुआ का शुभाशीष' : "Elders' Blessing";
   }
+  if (rel.includes('मौसा') || rel.includes('मौसी') || rel.includes('mausa') || rel.includes('mausi')) {
+    return lang === 'hi' ? 'मौसा-मौसी का शुभाशीष' : "Mausa & Mausi's Blessing";
+  }
   if (rel.includes('चाचा') || rel.includes('चाची') || rel.includes('uncle')) {
     return lang === 'hi' ? 'चाचा-चाची का आशीष' : "Uncle & Aunt's Blessing";
   }
@@ -94,14 +99,10 @@ const formatWishDate = (dateStr, lang) => {
   }
 };
 
-// Filter out excluded / deleted blessings
+// Filter out obsolete / merged wishes
 const isExcludedWish = (w) => {
   const text = `${w.name || ''} ${w.relation || ''} ${w.relationship || ''} ${w.message || ''}`.toLowerCase();
   return (
-    text.includes('vinay') ||
-    text.includes('sarita') ||
-    text.includes('mohit') ||
-    text.includes('anita') ||
     text.includes('प्रदीप प्रसाद एवं श्री अनिल') ||
     text.includes('pradeep prasad and anil')
   );
