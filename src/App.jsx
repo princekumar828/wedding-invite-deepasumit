@@ -15,6 +15,7 @@ import RsvpModal from './components/RsvpModal';
 import FloatingFlowerShower, { triggerFlowerShower } from './components/FlowerShower';
 import { TraditionalToran } from './components/TraditionalMotifs';
 import AdminDashboard from './components/admin/AdminDashboard';
+import LiveWeddingFeed from './components/LiveWeddingFeed';
 import { recordVisit, getLocalNotice, fetchLiveNotice, subscribeToNotice } from './lib/supabase';
 import { Calendar, MapPin, Heart, MessageSquareHeart, Flower2, MessageCircle } from 'lucide-react';
 
@@ -31,6 +32,21 @@ export default function App() {
       window.location.search.includes('admin=true')
     );
   });
+
+  // Secret Direct-Link Route for Live Photo & Social Feed (#live, #feed, #gallery, /live, /feed)
+  const checkIsFeedView = () => {
+    return (
+      window.location.hash === '#live' ||
+      window.location.hash === '#feed' ||
+      window.location.hash === '#gallery' ||
+      window.location.pathname.startsWith('/live') ||
+      window.location.pathname.startsWith('/feed') ||
+      window.location.search.includes('live=true') ||
+      window.location.search.includes('feed=true')
+    );
+  };
+
+  const [isFeedView, setIsFeedView] = useState(checkIsFeedView);
 
   // Live Announcement Ticker Notice
   const [notice, setNotice] = useState(getLocalNotice());
@@ -58,6 +74,7 @@ export default function App() {
         window.location.hash === '#admin' ||
         window.location.search.includes('admin=true')
       );
+      setIsFeedView(checkIsFeedView());
       fetchLiveNotice().then((n) => {
         if (n) setNotice(n);
       });
@@ -83,9 +100,30 @@ export default function App() {
             window.location.hash = '';
           }
           setIsAdminView(false);
+          setIsFeedView(checkIsFeedView());
           fetchLiveNotice().then((n) => {
             if (n) setNotice(n);
           });
+        }}
+      />
+    );
+  }
+
+  // If in Live Social Feed view (Direct link access only)
+  if (isFeedView) {
+    return (
+      <LiveWeddingFeed
+        initialLang={lang}
+        onBackToInvite={() => {
+          if (
+            window.location.pathname.startsWith('/live') ||
+            window.location.pathname.startsWith('/feed')
+          ) {
+            window.history.pushState({}, '', '/');
+          } else {
+            window.location.hash = '';
+          }
+          setIsFeedView(false);
         }}
       />
     );

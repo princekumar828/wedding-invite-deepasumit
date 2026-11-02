@@ -33,7 +33,11 @@ import {
   Radio,
   Edit2,
   Save,
-  X
+  X,
+  Camera,
+  ExternalLink,
+  Copy,
+  Check
 } from 'lucide-react';
 import {
   fetchAdminRsvps,
@@ -50,7 +54,11 @@ import {
   saveNotice,
   fetchLiveNotice,
   resetVisitCount,
-  setFlowerCount
+  setFlowerCount,
+  fetchWeddingPosts,
+  adminTogglePostApproval,
+  adminDeletePost,
+  adminDeleteComment
 } from '../../lib/supabase';
 
 const VALID_PINS = ['admin2002'];
@@ -71,6 +79,8 @@ export default function AdminDashboard({ onBackToSite }) {
   const [rsvps, setRsvps] = useState([]);
   const [wishes, setWishes] = useState([]);
   const [visits, setVisits] = useState([]);
+  const [feedPosts, setFeedPosts] = useState([]);
+  const [copiedFeedLink, setCopiedFeedLink] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Filters & Search
@@ -127,17 +137,19 @@ export default function AdminDashboard({ onBackToSite }) {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [liveStats, rsvpList, wishList, visitLogs, liveNotice] = await Promise.all([
+      const [liveStats, rsvpList, wishList, visitLogs, liveNotice, postList] = await Promise.all([
         getLiveStats(),
         fetchAdminRsvps(),
         fetchAdminWishes(),
         fetchRecentVisits(),
-        fetchLiveNotice()
+        fetchLiveNotice(),
+        fetchWeddingPosts(true)
       ]);
       setStats(liveStats);
       setRsvps(rsvpList);
       setWishes(wishList);
       setVisits(visitLogs);
+      setFeedPosts(postList || []);
       if (liveNotice) setNotice(liveNotice);
     } catch (err) {
       console.error('Admin load error:', err);
@@ -307,6 +319,41 @@ export default function AdminDashboard({ onBackToSite }) {
       }
       setWishes((prev) => prev.filter((w) => w.id !== id));
     }
+  };
+
+  // Feed Moderation Handlers
+  const handleToggleFeedPost = async (id, currentApproved) => {
+    setFeedPosts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, is_approved: !currentApproved } : p))
+    );
+    await adminTogglePostApproval(id, currentApproved);
+  };
+
+  const handleDeleteFeedPost = async (id) => {
+    if (window.confirm('क्या आप इस पोस्ट को स्थायी रूप से हटाना चाहते हैं?')) {
+      setFeedPosts((prev) => prev.filter((p) => p.id !== id));
+      await adminDeletePost(id);
+    }
+  };
+
+  const handleDeleteFeedComment = async (commentId, postId) => {
+    if (window.confirm('क्या आप इस टिप्पणी (comment) को हटाना चाहते हैं?')) {
+      setFeedPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId
+            ? { ...p, comments: (p.comments || []).filter((c) => c.id !== commentId) }
+            : p
+        )
+      );
+      await adminDeleteComment(commentId);
+    }
+  };
+
+  const handleCopyFeedLink = () => {
+    const feedUrl = `${window.location.origin}/#live`;
+    navigator.clipboard.writeText(feedUrl);
+    setCopiedFeedLink(true);
+    setTimeout(() => setCopiedFeedLink(false), 2500);
   };
 
   // Handle Manual RSVP add
@@ -612,6 +659,18 @@ ${salutation},
           >
             <MessageCircle className="w-3.5 h-3.5" />
             <span>📢 व्हाट्सएप इनवाइट</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('feed')}
+            className={`px-3.5 py-1.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              activeTab === 'feed'
+                ? 'bg-[#D4AF37] text-[#4A0E17] font-bold shadow-sm'
+                : 'bg-white/10 text-gray-200 hover:bg-white/20'
+            }`}
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>📸 लाइव सोशल फीड ({feedPosts.length})</span>
           </button>
 
           <button
@@ -1773,6 +1832,254 @@ ${salutation},
             </form>
           </div>
         )}
+
+        {/* ===================== TAB 6: LIVE SOCIAL FEED MODERATION ===================== */}
+        {activeTab === 'feed' && (
+          <div className="space-y-6 animate-fade-in">
+            {/* Header & Direct Link Banner */}
+            <div className="bg-gradient-to-r from-[#800020] via-[#9B111E] to-amber-700 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/30 text-xs font-semibold uppercase tracking-wider">
+                      DIRECT SECRET LINK
+                    </span>
+                    <span className="text-xs text-amber-200/80">
+                      (मुख्य साइट से छिपा हुआ / Hidden from main nav)
+                    </span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-100">
+                    📸 लाइव सोशल शादी फीड (Live Photo & Moments Feed)
+                  </h2>
+                  <p className="text-xs sm:text-sm text-amber-100/80 mt-1 max-w-2xl leading-relaxed">
+                    यह फीड मुख्य आमंत्रण पर सामान्य अतिथियों को नहीं दिखती। केवल वही मेहमान इसे देख सकते हैं जिनके पास यह डायरेक्ट लिंक या QR कोड होगा। वे तस्वीरें, बधाई संदेश, लाइक और कमेंट कर सकते हैं!
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={handleCopyFeedLink}
+                    className="px-4 py-2.5 rounded-xl bg-amber-400 text-[#4A0E17] font-semibold text-xs sm:text-sm hover:bg-amber-300 shadow flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
+                  >
+                    {copiedFeedLink ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-800" />
+                        <span>लिंक कॉपी हो गया!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>डायरेक्ट लिंक कॉपी करें</span>
+                      </>
+                    )}
+                  </button>
+
+                  <a
+                    href="#live"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/20 shadow flex items-center gap-2 transition-all"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>लाइव फीड खोलें</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* URL preview pill */}
+              <div className="mt-4 pt-3 border-t border-white/15 flex items-center gap-2 text-xs text-amber-200/90 font-mono">
+                <span className="font-semibold text-amber-300 font-sans">गुप्त लिंक:</span>
+                <span className="bg-black/30 px-3 py-1 rounded-lg select-all">
+                  {typeof window !== 'undefined' ? `${window.location.origin}/#live` : 'https://deepasumit.in/#live'}
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                <span className="text-[11px] text-stone-500 font-medium">कुल पोस्ट्स</span>
+                <p className="text-xl sm:text-2xl font-bold text-[#4A0E17] mt-0.5">{feedPosts.length}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                <span className="text-[11px] text-stone-500 font-medium">अपलोड की गई फोटोज़</span>
+                <p className="text-xl sm:text-2xl font-bold text-amber-600 mt-0.5">
+                  {feedPosts.filter((p) => Boolean(p.image_url)).length}
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                <span className="text-[11px] text-stone-500 font-medium">कुल लाइक्स</span>
+                <p className="text-xl sm:text-2xl font-bold text-rose-600 mt-0.5">
+                  {feedPosts.reduce((acc, p) => acc + (p.likes_count || 0), 0)}
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs">
+                <span className="text-[11px] text-stone-500 font-medium">कुल टिप्पणियां (Comments)</span>
+                <p className="text-xl sm:text-2xl font-bold text-indigo-600 mt-0.5">
+                  {feedPosts.reduce((acc, p) => acc + (p.comments?.length || 0), 0)}
+                </p>
+              </div>
+            </div>
+
+            {/* Posts Moderation List */}
+            <div className="bg-white rounded-3xl border border-stone-200 shadow-xs overflow-hidden">
+              <div className="p-4 sm:p-5 border-b border-stone-100 flex items-center justify-between">
+                <div>
+                  <h3 className="font-serif font-bold text-base text-[#4A0E17]">
+                    सभी पोस्ट्स व तस्वीरें (Posts Moderation)
+                  </h3>
+                  <p className="text-xs text-stone-500">
+                    यहाँ से आप किसी भी पोस्ट को तुरंत छुपा सकते हैं या स्थायी रूप से हटा सकते हैं।
+                  </p>
+                </div>
+                <button
+                  onClick={loadData}
+                  className="p-2 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 flex items-center gap-1 text-xs"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">रिफ्रेश</span>
+                </button>
+              </div>
+
+              {feedPosts.length === 0 ? (
+                <div className="p-12 text-center text-stone-400 text-sm">
+                  अभी तक कोई पोस्ट नहीं है।
+                </div>
+              ) : (
+                <div className="divide-y divide-stone-100">
+                  {feedPosts.map((post) => (
+                    <div key={post.id} className="p-4 sm:p-5 flex flex-col md:flex-row gap-4 hover:bg-stone-50/50 transition-colors">
+                      {/* Photo Thumbnail if exists */}
+                      {post.image_url ? (
+                        <div className="w-full md:w-36 h-36 bg-stone-900 rounded-2xl overflow-hidden shrink-0 border border-stone-200">
+                          <img
+                            src={post.image_url}
+                            alt="Post"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full md:w-36 h-24 md:h-36 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0 border border-amber-200/60 text-stone-400 text-xs text-center p-2">
+                          केवल टेक्स्ट संदेश
+                        </div>
+                      )}
+
+                      {/* Content details */}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-[#4A0E17]">
+                              {post.uploader_name}
+                            </span>
+                            {post.uploader_phone && (
+                              <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full font-mono">
+                                📞 {post.uploader_phone}
+                              </span>
+                            )}
+                            <span className="text-xs text-stone-400">
+                              • {new Date(post.created_at).toLocaleDateString('hi-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {/* Approval Status Badge */}
+                            {post.is_approved !== false ? (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                <span>सार्वजनिक (Live)</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-semibold flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                <span>छिपा हुआ (Hidden)</span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {post.content && (
+                          <p className="text-xs sm:text-sm text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-100">
+                            {post.content}
+                          </p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-stone-500 pt-1">
+                          <span className="flex items-center gap-1 font-medium text-rose-600">
+                            ❤️ {post.likes_count || 0} लाइक्स
+                          </span>
+                          <span className="flex items-center gap-1 font-medium text-indigo-600">
+                            💬 {post.comments?.length || 0} टिप्पणियां
+                          </span>
+                          <span className="bg-stone-100 px-2 py-0.5 rounded text-[11px]">
+                            टैग: {post.event_tag || 'general'}
+                          </span>
+                        </div>
+
+                        {/* Comments nested list */}
+                        {post.comments && post.comments.length > 0 && (
+                          <div className="mt-3 pl-3 border-l-2 border-amber-300 space-y-1.5 pt-1">
+                            <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider block">
+                              टिप्पणियां (Comments):
+                            </span>
+                            {post.comments.map((comment) => (
+                              <div
+                                key={comment.id}
+                                className="flex items-center justify-between bg-stone-100/70 p-2 rounded-lg text-xs"
+                              >
+                                <div>
+                                  <span className="font-semibold text-stone-800 mr-2">
+                                    {comment.author_name}:
+                                  </span>
+                                  <span className="text-stone-700">{comment.comment_text}</span>
+                                </div>
+                                <button
+                                  onClick={() => handleDeleteFeedComment(comment.id, post.id)}
+                                  title="टिप्पणी हटाएं"
+                                  className="text-stone-400 hover:text-red-600 p-1 rounded"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Admin Actions */}
+                      <div className="flex md:flex-col items-center justify-end gap-2 shrink-0 pt-2 md:pt-0">
+                        <button
+                          onClick={() => handleToggleFeedPost(post.id, post.is_approved !== false)}
+                          className={`w-full px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                            post.is_approved !== false
+                              ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                              : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+                          }`}
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>{post.is_approved !== false ? 'छुपाएं (Hide)' : 'स्वीकृत करें (Approve)'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteFeedPost(post.id)}
+                          className="w-full px-3 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>हटाएं (Delete)</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );

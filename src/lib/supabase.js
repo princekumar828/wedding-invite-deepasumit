@@ -696,3 +696,354 @@ export function subscribeToNotice(callback) {
     return () => {};
   }
 }
+
+/**
+ * ============================================================================
+ * LIVE WEDDING SOCIAL FEED & PHOTO UPLOADS (Facebook / Instagram Style)
+ * ============================================================================
+ */
+
+/**
+ * Fetch all posts and their comments
+ */
+export async function fetchWeddingPosts(includeUnapproved = false) {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      let query = supabase
+        .from('wedding_posts')
+        .select(`
+          id,
+          uploader_name,
+          uploader_phone,
+          content,
+          image_url,
+          event_tag,
+          likes_count,
+          is_approved,
+          created_at,
+          wedding_post_comments (
+            id,
+            author_name,
+            comment_text,
+            is_approved,
+            created_at
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (!includeUnapproved) {
+        query = query.eq('is_approved', true);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      if (data) {
+        // Sort comments chronologically
+        const formatted = data.map((post) => ({
+          ...post,
+          comments: (post.wedding_post_comments || [])
+            .filter((c) => includeUnapproved || c.is_approved !== false)
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        }));
+        try {
+          localStorage.setItem('ds_wedding_posts_cache', JSON.stringify(formatted));
+        } catch {}
+        return formatted;
+      }
+    } catch (err) {
+      console.warn('Fetch posts from Supabase error, falling back to local:', err);
+    }
+  }
+
+  // Fallback to local storage
+  try {
+    const cached = localStorage.getItem('ds_wedding_posts_cache');
+    return cached ? JSON.parse(cached) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Upload an image file to Supabase Storage bucket 'wedding-photos'
+ */
+export async function uploadWeddingImage(file) {
+  if (!file) return null;
+
+  if (!isSupabaseConfigured || !supabase) {
+    // Local fallback: convert to data URL
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  try {
+    const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+    const fileName = `candid_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+    const filePath = `feed/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('wedding-photos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.warn('Storage upload error, falling back to data URL:', uploadError);
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const { data } = supabase.storage.from('wedding-photos').getPublicUrl(filePath);
+    return data?.publicUrl || null;
+  } catch (err) {
+    console.error('Upload image exception:', err);
+    return null;
+  }
+}
+
+/**
+ * Create a new Wedding Post (text only or image + text)
+ */
+export async function createWeddingPost({ uploaderName, uploaderPhone, content, imageUrl, eventTag = 'general' }) {
+  const newPost = {
+    uploader_name: uploaderName?.trim() || 'शुभचिंतक (Well-wisher)',
+    uploader_phone: uploaderPhone?.trim() || null,
+    content: content?.trim() || '',
+    image_url: imageUrl || null,
+    event_tag: eventTag || 'general',
+    likes_count: 0,
+    is_approved: true, // Default live for instant joy
+    created_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('wedding_posts')
+        .insert([newPost])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { success: true, post: { ...data, comments: [] } };
+    } catch (err) {
+      console.error('Error inserting post to Supabase:', err);
+    }
+  }
+
+  // Local fallback
+  try {
+    const localPost = { ...newPost, id: `local_${Date.now()}`, comments: [] };
+    const cached = JSON.parse(localStorage.getItem('ds_wedding_posts_cache') || '[]');
+    cached.unshift(localPost);
+    localStorage.setItem('ds_wedding_posts_cache', JSON.stringify(cached));
+    return { success: true, post: localPost };
+  } catch (e) {
+    return { success: false, error: e };
+  }
+}
+
+/**
+ * Add a comment to a wedding post
+ */
+export async function addPostComment({ postId, authorName, commentText }) {
+  if (!postId || !commentText?.trim()) return { success: false };
+
+  const newComment = {
+    post_id: postId,
+    author_name: authorName?.trim() || 'मेहमान (Guest)',
+    comment_text: commentText.trim(),
+    is_approved: true,
+    created_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('wedding_post_comments')
+        .insert([newComment])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { success: true, comment: data };
+    } catch (err) {
+      console.error('Error adding comment to Supabase:', err);
+    }
+  }
+
+  // Local fallback
+  try {
+    const cached = JSON.parse(localStorage.getItem('ds_wedding_posts_cache') || '[]');
+    const post = cached.find((p) => p.id === postId);
+    const localComment = { ...newComment, id: `local_comment_${Date.now()}` };
+    if (post) {
+      if (!post.comments) post.comments = [];
+      post.comments.push(localComment);
+      localStorage.setItem('ds_wedding_posts_cache', JSON.stringify(cached));
+    }
+    return { success: true, comment: localComment };
+  } catch (e) {
+    return { success: false, error: e };
+  }
+}
+
+/**
+ * Like a wedding post
+ */
+export async function likeWeddingPost(postId, currentLikes = 0) {
+  // Update local storage cache first
+  try {
+    const cached = JSON.parse(localStorage.getItem('ds_wedding_posts_cache') || '[]');
+    const post = cached.find((p) => p.id === postId);
+    if (post) {
+      post.likes_count = (post.likes_count || 0) + 1;
+      localStorage.setItem('ds_wedding_posts_cache', JSON.stringify(cached));
+    }
+  } catch {}
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('wedding_posts')
+        .update({ likes_count: currentLikes + 1 })
+        .eq('id', postId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { success: true, likes: data?.likes_count };
+    } catch (err) {
+      console.error('Error liking post on Supabase:', err);
+    }
+  }
+
+  return { success: true, likes: currentLikes + 1 };
+}
+
+/**
+ * Admin: Toggle Post Approval
+ */
+export async function adminTogglePostApproval(postId, currentStatus) {
+  const newStatus = !currentStatus;
+
+  try {
+    const cached = JSON.parse(localStorage.getItem('ds_wedding_posts_cache') || '[]');
+    const post = cached.find((p) => p.id === postId);
+    if (post) {
+      post.is_approved = newStatus;
+      localStorage.setItem('ds_wedding_posts_cache', JSON.stringify(cached));
+    }
+  } catch {}
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase
+        .from('wedding_posts')
+        .update({ is_approved: newStatus })
+        .eq('id', postId);
+
+      if (error) throw error;
+      return { success: true, is_approved: newStatus };
+    } catch (err) {
+      console.error('Error toggling post approval:', err);
+      return { success: false, error: err };
+    }
+  }
+
+  return { success: true, is_approved: newStatus };
+}
+
+/**
+ * Admin: Delete a Post
+ */
+export async function adminDeletePost(postId) {
+  try {
+    const cached = JSON.parse(localStorage.getItem('ds_wedding_posts_cache') || '[]');
+    const updated = cached.filter((p) => p.id !== postId);
+    localStorage.setItem('ds_wedding_posts_cache', JSON.stringify(updated));
+  } catch {}
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase
+        .from('wedding_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) throw error;
+      return { success: true };
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      return { success: false, error: err };
+    }
+  }
+
+  return { success: true };
+}
+
+/**
+ * Admin: Delete a Comment
+ */
+export async function adminDeleteComment(commentId) {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase
+        .from('wedding_post_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+      return { success: true };
+    } catch (err) {
+      console.error('Error deleting comment:', err);
+      return { success: false, error: err };
+    }
+  }
+  return { success: true };
+}
+
+/**
+ * Realtime subscription for posts and comments
+ */
+export function subscribeToWeddingFeed(onUpdate) {
+  if (!isSupabaseConfigured || !supabase) return () => {};
+
+  try {
+    const channel = supabase
+      .channel('wedding_feed_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'wedding_posts' },
+        () => {
+          if (typeof onUpdate === 'function') onUpdate();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'wedding_post_comments' },
+        () => {
+          if (typeof onUpdate === 'function') onUpdate();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } catch (err) {
+    console.warn('Realtime feed subscription warning:', err);
+    return () => {};
+  }
+}
+
