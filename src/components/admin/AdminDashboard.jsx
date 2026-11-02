@@ -47,7 +47,8 @@ import {
   fetchRecentVisits,
   submitRsvp,
   getLocalNotice,
-  saveLocalNotice,
+  saveNotice,
+  fetchLiveNotice,
   resetVisitCount,
   setFlowerCount
 } from '../../lib/supabase';
@@ -126,16 +127,18 @@ export default function AdminDashboard({ onBackToSite }) {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [liveStats, rsvpList, wishList, visitLogs] = await Promise.all([
+      const [liveStats, rsvpList, wishList, visitLogs, liveNotice] = await Promise.all([
         getLiveStats(),
         fetchAdminRsvps(),
         fetchAdminWishes(),
-        fetchRecentVisits()
+        fetchRecentVisits(),
+        fetchLiveNotice()
       ]);
       setStats(liveStats);
       setRsvps(rsvpList);
       setWishes(wishList);
       setVisits(visitLogs);
+      if (liveNotice) setNotice(liveNotice);
     } catch (err) {
       console.error('Admin load error:', err);
     } finally {
@@ -413,9 +416,13 @@ export default function AdminDashboard({ onBackToSite }) {
   };
 
   // Save Announcement Ticker
-  const handleSaveNotice = (e) => {
+  const handleSaveNotice = async (e) => {
     e.preventDefault();
-    saveLocalNotice(notice);
+    const res = await saveNotice(notice);
+    if (res && res.success === false) {
+      alert('घोषणा सुरक्षित करने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+      return;
+    }
     setNoticeSaved(true);
     setTimeout(() => setNoticeSaved(false), 2500);
   };

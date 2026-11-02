@@ -557,7 +557,7 @@ export async function fetchRecentVisits() {
 }
 
 /**
- * Admin: Site Notice Ticker Management (stored in site_stats or local)
+ * Site Notice Ticker Management (stored in Supabase site_stats with localStorage fallback)
  */
 export function getLocalNotice() {
   try {
@@ -569,11 +569,91 @@ export function getLocalNotice() {
   }
 }
 
-export function saveLocalNotice(noticeObj) {
+export async function fetchLiveNotice() {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('site_stats')
+        .select('notice_text, notice_enabled')
+        .eq('id', 'global')
+        .maybeSingle();
+
+      if (!error && data) {
+        const notice = {
+          text: data.notice_text || '',
+          enabled: Boolean(data.notice_enabled)
+        };
+        try {
+          localStorage.setItem('ds_live_notice', JSON.stringify(notice));
+        } catch {}
+        return notice;
+      }
+    } catch (e) {
+      console.warn('Fetch live notice notice:', e);
+    }
+  }
+  return getLocalNotice();
+}
+
+export async function saveNotice(noticeObj) {
   try {
     localStorage.setItem('ds_live_notice', JSON.stringify(noticeObj));
-    return true;
-  } catch {
-    return false;
+  } catch {}
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase
+        .from('site_stats')
+        .update({
+          notice_text: noticeObj?.text || '',
+          notice_enabled: Boolean(noticeObj?.enabled),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', 'global');
+
+      if (error) throw error;
+      return { success: true };
+    } catch (e) {
+      console.error('Save live notice error:', e);
+      return { success: false, error: e };
+    }
+  }
+  return { success: true };
+}
+
+export const saveLocalNotice = saveNotice;
+
+export function subscribeToNotice(callback) {
+  if (!isSupabaseConfigured || !supabase) return () => {};
+
+  try {
+    const channel = supabase
+      .channel('site_stats_notice')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'site_stats', filter: 'id=eq.global' },
+        (payload) => {
+          if (payload?.new) {
+            const notice = {
+              text: payload.new.notice_text || '',
+              enabled: Boolean(payload.new.notice_enabled)
+            };
+            try {
+              localStorage.setItem('ds_live_notice', JSON.stringify(notice));
+            } catch {}
+            if (typeof callback === 'function') {
+              callback(notice);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } catch (err) {
+    console.warn('Realtime notice subscription notice:', err);
+    return () => {};
   }
 }

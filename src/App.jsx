@@ -15,7 +15,7 @@ import RsvpModal from './components/RsvpModal';
 import FloatingFlowerShower, { triggerFlowerShower } from './components/FlowerShower';
 import { TraditionalToran } from './components/TraditionalMotifs';
 import AdminDashboard from './components/admin/AdminDashboard';
-import { recordVisit, getLocalNotice } from './lib/supabase';
+import { recordVisit, getLocalNotice, fetchLiveNotice, subscribeToNotice } from './lib/supabase';
 import { Calendar, MapPin, Heart, MessageSquareHeart, Flower2, MessageCircle } from 'lucide-react';
 
 export default function App() {
@@ -38,9 +38,19 @@ export default function App() {
   // Audio Hook (controls auspicious background music)
   const { isPlaying, playMusic, toggleMusic } = useAudio();
 
-  // Log unique visit anonymously on first load
+  // Log unique visit anonymously on first load & listen for live announcements
   useEffect(() => {
     recordVisit();
+
+    // Fetch cloud notice from Supabase
+    fetchLiveNotice().then((n) => {
+      if (n) setNotice(n);
+    });
+
+    // Realtime subscription for live notice updates
+    const unsubscribeNotice = subscribeToNotice((newNotice) => {
+      if (newNotice) setNotice(newNotice);
+    });
 
     const handleRouteChange = () => {
       setIsAdminView(
@@ -48,12 +58,15 @@ export default function App() {
         window.location.hash === '#admin' ||
         window.location.search.includes('admin=true')
       );
-      setNotice(getLocalNotice());
+      fetchLiveNotice().then((n) => {
+        if (n) setNotice(n);
+      });
     };
 
     window.addEventListener('popstate', handleRouteChange);
     window.addEventListener('hashchange', handleRouteChange);
     return () => {
+      unsubscribeNotice();
       window.removeEventListener('popstate', handleRouteChange);
       window.removeEventListener('hashchange', handleRouteChange);
     };
@@ -70,7 +83,9 @@ export default function App() {
             window.location.hash = '';
           }
           setIsAdminView(false);
-          setNotice(getLocalNotice());
+          fetchLiveNotice().then((n) => {
+            if (n) setNotice(n);
+          });
         }}
       />
     );
@@ -80,10 +95,14 @@ export default function App() {
     <div className="min-h-screen bg-[#FAF7F0] text-[#4A0E17] font-sans relative selection:bg-[#9B111E] selection:text-white">
       {/* Live Announcement Banner Ticker */}
       {notice?.enabled && notice?.text && (
-        <div className="bg-gradient-to-r from-amber-600 via-[#9B111E] to-amber-700 text-white text-xs font-serif font-bold py-2 px-4 text-center sticky top-0 z-50 shadow-md flex items-center justify-center gap-2 animate-fade-in">
-          <span className="text-sm">📢</span>
-          <span>{notice.text}</span>
-        </div>
+        <aside
+          role="alert"
+          aria-live="polite"
+          className="bg-gradient-to-r from-amber-600 via-[#9B111E] to-amber-700 text-white text-xs sm:text-sm font-serif font-bold py-2.5 px-4 text-center sticky top-0 z-50 shadow-md flex items-center justify-center gap-2 animate-fade-in"
+        >
+          <span className="text-sm sm:text-base animate-pulse">📢</span>
+          <span className="tracking-wide">{notice.text}</span>
+        </aside>
       )}
 
       {/* 1. Floating Auspicious Flower Petals Canvas */}
