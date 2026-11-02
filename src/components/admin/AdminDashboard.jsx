@@ -53,7 +53,7 @@ import {
   setFlowerCount
 } from '../../lib/supabase';
 
-const VALID_PINS = ['2501', '250127', 'deepasumit', '77370'];
+const VALID_PINS = ['admin2002'];
 
 export default function AdminDashboard({ onBackToSite }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -109,12 +109,12 @@ export default function AdminDashboard({ onBackToSite }) {
   // Login handler
   const handleLogin = (e) => {
     e.preventDefault();
-    if (VALID_PINS.includes(pinInput.trim().toLowerCase())) {
+    if (VALID_PINS.includes(pinInput.trim())) {
       sessionStorage.setItem('ds_admin_auth', 'true');
       setIsAuthenticated(true);
       setPinError('');
     } else {
-      setPinError('गलत PIN! कृपया विवाह दिनांक (उदा. 2501 या 250127) दर्ज करें।');
+      setPinError('गलत पासवर्ड! कृपया सही एडमिन PIN/पासवर्ड दर्ज करें।');
     }
   };
 
@@ -482,14 +482,11 @@ ${salutation},
               <input
                 type="password"
                 autoFocus
-                placeholder="सुरक्षा PIN दर्ज करें (उदा. 2501)..."
+                placeholder="सुरक्षा पासवर्ड दर्ज करें..."
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 className="w-full text-center text-lg tracking-widest px-4 py-3 rounded-2xl border-2 border-gray-300 focus:border-[#9B111E] focus:ring-2 focus:ring-[#D4AF37]/40 outline-none font-mono"
               />
-              <p className="text-[11px] text-gray-500 mt-1 font-serif">
-                💡 सुझाव: विवाह दिनांक पिन (जैसे <strong>2501</strong> या <strong>250127</strong>)
-              </p>
             </div>
 
             {pinError && (
