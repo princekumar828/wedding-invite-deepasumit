@@ -243,13 +243,26 @@ export async function incrementFlowerCount() {
   }
 }
 
+// Filter out excluded / deleted wishes
+const isExcludedWish = (w) => {
+  const text = `${w?.name || ''} ${w?.relation || ''} ${w?.message || ''}`.toLowerCase();
+  return (
+    text.includes('vinay') ||
+    text.includes('sarita') ||
+    text.includes('mohit') ||
+    text.includes('anita') ||
+    text.includes('प्रदीप प्रसाद एवं श्री अनिल')
+  );
+};
+
 /**
  * Fetch wedding wishes
  */
 export async function fetchWishes() {
   if (!isSupabaseConfigured || !supabase) {
     const stored = localStorage.getItem('wedding_wishes');
-    return stored ? JSON.parse(stored) : [];
+    const parsed = stored ? JSON.parse(stored) : [];
+    return parsed.filter((w) => !isExcludedWish(w));
   }
 
   try {
@@ -260,11 +273,12 @@ export async function fetchWishes() {
       .limit(50);
 
     if (error) throw error;
-    return data || [];
+    return (data || []).filter((w) => !isExcludedWish(w));
   } catch (err) {
     console.warn('Wishes fetch notice:', err.message);
     const stored = localStorage.getItem('wedding_wishes');
-    return stored ? JSON.parse(stored) : [];
+    const parsed = stored ? JSON.parse(stored) : [];
+    return parsed.filter((w) => !isExcludedWish(w));
   }
 }
 
