@@ -274,7 +274,11 @@ export default function AdminDashboard({ onBackToSite }) {
   // Handle Delete RSVP
   const handleDeleteRsvp = async (id, name) => {
     if (window.confirm(`क्या आप "${name}" का RSVP हटाना चाहते हैं?`)) {
-      await deleteAdminRsvp(id);
+      const res = await deleteAdminRsvp(id);
+      if (res && res.success === false) {
+        alert('हटाने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+        return;
+      }
       setRsvps((prev) => prev.filter((r) => r.id !== id));
     }
   };
@@ -282,7 +286,11 @@ export default function AdminDashboard({ onBackToSite }) {
   // Handle Delete Wish
   const handleDeleteWish = async (id, name) => {
     if (window.confirm(`क्या आप "${name}" का शुभकामना संदेश हटाना चाहते हैं?`)) {
-      await deleteAdminWish(id);
+      const res = await deleteAdminWish(id);
+      if (res && res.success === false) {
+        alert('हटाने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+        return;
+      }
       setWishes((prev) => prev.filter((w) => w.id !== id));
     }
   };
@@ -291,13 +299,17 @@ export default function AdminDashboard({ onBackToSite }) {
   const handleAddManualRsvp = async (e) => {
     e.preventDefault();
     if (!manualForm.name) return;
-    await submitRsvp({
+    const res = await submitRsvp({
       name: manualForm.name,
       phone: manualForm.phone,
       attending: manualForm.attending,
       guestCount: manualForm.guestCount,
       message: manualForm.message ? `[फोन पर दर्ज] ${manualForm.message}` : '[फोन पर दर्ज]'
     });
+    if (res && res.success === false) {
+      alert('RSVP जोड़ने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+      return;
+    }
     setShowAddRsvp(false);
     setManualForm({ name: '', phone: '', guestCount: 2, attending: true, message: '' });
     loadData();
@@ -307,15 +319,20 @@ export default function AdminDashboard({ onBackToSite }) {
   const handleUpdateRsvp = async (e) => {
     e.preventDefault();
     if (!editingRsvp) return;
-    await updateAdminRsvp(editingRsvp.id, {
+    const payload = {
       name: editingRsvp.name,
       phone: editingRsvp.phone,
       attending: editingRsvp.attending,
       guest_count: parseInt(editingRsvp.guest_count, 10) || 1,
       message: editingRsvp.message
-    });
+    };
+    const res = await updateAdminRsvp(editingRsvp.id, payload);
+    if (res && res.success === false) {
+      alert('अपडेट करने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+      return;
+    }
     setRsvps((prev) =>
-      prev.map((r) => (r.id === editingRsvp.id ? { ...r, ...editingRsvp } : r))
+      prev.map((r) => (r.id === editingRsvp.id ? { ...r, ...payload } : r))
     );
     setEditingRsvp(null);
   };
@@ -325,6 +342,10 @@ export default function AdminDashboard({ onBackToSite }) {
     e.preventDefault();
     if (!newWishForm.name || !newWishForm.message) return;
     const res = await submitWish(newWishForm);
+    if (res && res.success === false) {
+      alert('संदेश जोड़ने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+      return;
+    }
     if (res.success && res.data) {
       setWishes((prev) => [res.data, ...prev]);
     }
@@ -336,13 +357,18 @@ export default function AdminDashboard({ onBackToSite }) {
   const handleUpdateWish = async (e) => {
     e.preventDefault();
     if (!editingWish) return;
-    await updateAdminWish(editingWish.id, {
+    const payload = {
       name: editingWish.name,
       relation: editingWish.relation,
       message: editingWish.message
-    });
+    };
+    const res = await updateAdminWish(editingWish.id, payload);
+    if (res && res.success === false) {
+      alert('अपडेट करने में समस्या आई: ' + (res.error?.message || 'सर्वर से संपर्क नहीं हो सका'));
+      return;
+    }
     setWishes((prev) =>
-      prev.map((w) => (w.id === editingWish.id ? { ...w, ...editingWish } : w))
+      prev.map((w) => (w.id === editingWish.id ? { ...w, ...payload } : w))
     );
     setEditingWish(null);
   };

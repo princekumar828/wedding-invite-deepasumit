@@ -181,6 +181,11 @@ export async function resetVisitCount() {
         .from('site_stats')
         .update({ total_visits: 0 })
         .eq('id', 'global');
+
+      await supabase
+        .from('site_visits')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
     } catch (e) {
       console.warn('Reset visits remote error:', e);
     }
@@ -358,11 +363,16 @@ export async function fetchAdminRsvps() {
  * Admin: Update an RSVP (Full CRUD)
  */
 export async function updateAdminRsvp(id, updates) {
-  if (!isSupabaseConfigured || !supabase) {
+  try {
     const stored = localStorage.getItem('wedding_rsvps');
-    const rsvps = stored ? JSON.parse(stored) : [];
-    const updated = rsvps.map((r) => (r.id === id ? { ...r, ...updates } : r));
-    localStorage.setItem('wedding_rsvps', JSON.stringify(updated));
+    if (stored) {
+      const rsvps = JSON.parse(stored);
+      const updated = rsvps.map((r) => (r.id === id ? { ...r, ...updates } : r));
+      localStorage.setItem('wedding_rsvps', JSON.stringify(updated));
+    }
+  } catch {}
+
+  if (!isSupabaseConfigured || !supabase) {
     return { success: true };
   }
 
@@ -378,12 +388,7 @@ export async function updateAdminRsvp(id, updates) {
     return { success: true, data };
   } catch (err) {
     console.error('Update RSVP error:', err);
-    // fallback
-    const stored = localStorage.getItem('wedding_rsvps');
-    const rsvps = stored ? JSON.parse(stored) : [];
-    const updated = rsvps.map((r) => (r.id === id ? { ...r, ...updates } : r));
-    localStorage.setItem('wedding_rsvps', JSON.stringify(updated));
-    return { success: true };
+    return { success: false, error };
   }
 }
 
@@ -391,11 +396,15 @@ export async function updateAdminRsvp(id, updates) {
  * Admin: Delete an RSVP
  */
 export async function deleteAdminRsvp(id) {
-  if (!isSupabaseConfigured || !supabase) {
+  try {
     const stored = localStorage.getItem('wedding_rsvps');
-    const rsvps = stored ? JSON.parse(stored) : [];
-    const updated = rsvps.filter((r) => r.id !== id);
-    localStorage.setItem('wedding_rsvps', JSON.stringify(updated));
+    if (stored) {
+      const rsvps = JSON.parse(stored);
+      localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps.filter((r) => r.id !== id)));
+    }
+  } catch {}
+
+  if (!isSupabaseConfigured || !supabase) {
     return { success: true };
   }
 
@@ -422,11 +431,22 @@ export const fetchAdminWishes = fetchWishes;
  * Admin: Update a Wish (Full CRUD)
  */
 export async function updateAdminWish(id, updates) {
-  if (!isSupabaseConfigured || !supabase) {
+  try {
     const stored = localStorage.getItem('wedding_wishes');
-    const wishes = stored ? JSON.parse(stored) : [];
-    const updated = wishes.map((w) => (w.id === id ? { ...w, ...updates } : w));
-    localStorage.setItem('wedding_wishes', JSON.stringify(updated));
+    if (stored) {
+      const wishes = JSON.parse(stored);
+      const updated = wishes.map((w) => (w.id === id ? { ...w, ...updates } : w));
+      localStorage.setItem('wedding_wishes', JSON.stringify(updated));
+    }
+    const storedV5 = localStorage.getItem('deepa_sumit_wishes_v5');
+    if (storedV5) {
+      const wishesV5 = JSON.parse(storedV5);
+      const updatedV5 = wishesV5.map((w) => (w.id === id ? { ...w, ...updates } : w));
+      localStorage.setItem('deepa_sumit_wishes_v5', JSON.stringify(updatedV5));
+    }
+  } catch {}
+
+  if (!isSupabaseConfigured || !supabase) {
     return { success: true };
   }
 
@@ -442,11 +462,7 @@ export async function updateAdminWish(id, updates) {
     return { success: true, data };
   } catch (err) {
     console.error('Update wish error:', err);
-    const stored = localStorage.getItem('wedding_wishes');
-    const wishes = stored ? JSON.parse(stored) : [];
-    const updated = wishes.map((w) => (w.id === id ? { ...w, ...updates } : w));
-    localStorage.setItem('wedding_wishes', JSON.stringify(updated));
-    return { success: true };
+    return { success: false, error };
   }
 }
 
@@ -472,11 +488,20 @@ export async function setFlowerCount(count = 0) {
  * Admin: Delete a Wish
  */
 export async function deleteAdminWish(id) {
-  if (!isSupabaseConfigured || !supabase) {
+  try {
     const stored = localStorage.getItem('wedding_wishes');
-    const wishes = stored ? JSON.parse(stored) : [];
-    const updated = wishes.filter((w) => w.id !== id);
-    localStorage.setItem('wedding_wishes', JSON.stringify(updated));
+    if (stored) {
+      const wishes = JSON.parse(stored);
+      localStorage.setItem('wedding_wishes', JSON.stringify(wishes.filter((w) => w.id !== id)));
+    }
+    const storedV5 = localStorage.getItem('deepa_sumit_wishes_v5');
+    if (storedV5) {
+      const wishesV5 = JSON.parse(storedV5);
+      localStorage.setItem('deepa_sumit_wishes_v5', JSON.stringify(wishesV5.filter((w) => w.id !== id)));
+    }
+  } catch {}
+
+  if (!isSupabaseConfigured || !supabase) {
     return { success: true };
   }
 
