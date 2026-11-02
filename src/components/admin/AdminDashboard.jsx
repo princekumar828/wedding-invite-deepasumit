@@ -363,7 +363,9 @@ export default function AdminDashboard({ onBackToSite }) {
     const payload = {
       name: editingWish.name,
       relation: editingWish.relation,
-      message: editingWish.message
+      message: editingWish.message,
+      name_en: editingWish.name_en || null,
+      message_en: editingWish.message_en || null
     };
     const res = await updateAdminWish(editingWish.id, payload);
     if (res && res.success === false) {
@@ -1513,7 +1515,11 @@ ${salutation},
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-[10px] text-gray-400">
-                    <span>{new Date(w.created_at || Date.now()).toLocaleDateString('hi-IN')}</span>
+                    <span>
+                      {new Date(w.created_at || Date.now())
+                        .toLocaleDateString('hi-IN', { month: 'long', year: 'numeric' })
+                        .replace(/अक्तूबर/g, 'अक्टूबर')}
+                    </span>
                     <a
                       href={`https://wa.me/?text=${encodeURIComponent(
                         `नमस्ते ${w.name} जी, दीपा संग सुमित के शुभ विवाह पर आपके स्नेहिल शुभकामना संदेश के लिए कोटि-कोटि धन्यवाद! — साहू परिवार`

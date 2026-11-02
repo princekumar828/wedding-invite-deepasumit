@@ -268,9 +268,9 @@ export async function fetchWishes() {
   try {
     const { data, error } = await supabase
       .from('wedding_wishes')
-      .select('id, name, relation, message, created_at')
+      .select('id, name, name_en, relation, message, message_en, created_at')
       .order('created_at', { ascending: false })
-      .limit(50);
+      .limit(100);
 
     if (error) throw error;
     return (data || []).filter((w) => !isExcludedWish(w));

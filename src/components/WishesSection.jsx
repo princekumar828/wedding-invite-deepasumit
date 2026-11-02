@@ -3,114 +3,6 @@ import confetti from 'canvas-confetti';
 import { MessageSquareHeart, Send, Sparkles, Heart, Smile } from 'lucide-react';
 import { fetchWishes, submitWish } from '../lib/supabase';
 
-const initialWishes = [
-  {
-    id: 1,
-    name: "श्रीमती सुनिता देवी एवं श्री दिलीप साहू",
-    nameHi: "श्रीमती सुनिता देवी एवं श्री दिलीप साहू",
-    nameEn: "Smt. Sunita Devi & Shri Dilip Sahu",
-    relationshipHi: "वधू के माता-पिता",
-    relationshipEn: "Bride's Parents",
-    badgeHi: "माँ-पापा का आशीष",
-    badgeEn: "Parents' Blessing",
-    message: "हमारी लाडली बिटिया दीपा और दामाद सुमित को भगवान लक्ष्मीनारायण का अखंड आशीर्वाद मिले। आपका जीवन सदा सुख, शांति और समृद्धि से महकता रहे। — माँ एवं पापा",
-    messageHi: "हमारी लाडली बिटिया दीपा और दामाद सुमित को भगवान लक्ष्मीनारायण का अखंड आशीर्वाद मिले। आपका जीवन सदा सुख, शांति और समृद्धि से महकता रहे। — माँ एवं पापा",
-    messageEn: "May Lord Lakshmi-Narayana shower endless divine blessings upon our beloved daughter Deepa and son-in-law Sumit. May your life together always bloom with joy, peace, and eternal prosperity. — Mother & Father",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  },
-  {
-    id: 2,
-    name: "आनन्द प्रसाद चौधरी एवं श्रीमती ललिता देवी",
-    nameHi: "आनन्द प्रसाद चौधरी एवं श्रीमती ललिता देवी",
-    nameEn: "Anand Prasad Choudhary & Smt. Lalita Devi",
-    relationshipHi: "फूफा जी एवं फुआ जी",
-    relationshipEn: "Uncle & Aunt (Phupha & Phua)",
-    badgeHi: "फूफा-फुआ का शुभाशीष",
-    badgeEn: "Elders' Blessing",
-    message: "वर-वधू को नव दाम्पत्य जीवन की हार्दिक बधाई एवं शुभाशीष। ईश्वर आप दोनों की जोड़ी को हर संकट से दूर रखे और हमेशा खुशहाल रखे।",
-    messageHi: "वर-वधू को नव दाम्पत्य जीवन की हार्दिक बधाई एवं शुभाशीष। ईश्वर आप दोनों की जोड़ी को हर संकट से दूर रखे और हमेशा खुशहाल रखे।",
-    messageEn: "Heartfelt congratulations and divine blessings to the newlyweds. May the Almighty protect your holy union and keep you both forever blissful.",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  },
-  {
-    id: 3,
-    name: "श्री प्रदीप प्रसाद एवं श्रीमती लक्ष्मी देवी",
-    nameHi: "श्री प्रदीप प्रसाद एवं श्रीमती लक्ष्मी देवी",
-    nameEn: "Shri Pradeep Prasad & Smt. Laxmi Devi",
-    relationshipHi: "चाचा जी एवं चाची जी",
-    relationshipEn: "Paternal Uncle & Aunt (Chacha & Chachi)",
-    badgeHi: "चाचा-चाची का आशीष",
-    badgeEn: "Uncle & Aunt's Blessing",
-    message: "दीपा बिटिया और सुमित को शुभ विवाह की ढेर सारी शुभकामनाएं एवं शुभाशीष। आपका वैवाहिक जीवन प्रेम, विश्वास और खुशियों से परिपूर्ण रहे।",
-    messageHi: "दीपा बिटिया और सुमित को शुभ विवाह की ढेर सारी शुभकामनाएं एवं शुभाशीष। आपका वैवाहिक जीवन प्रेम, विश्वास और खुशियों से परिपूर्ण रहे।",
-    messageEn: "Heartfelt congratulations and warm blessings to dear Deepa and Sumit. May your sacred marriage be enriched with everlasting love, mutual trust, and boundless happiness.",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  },
-  {
-    id: 4,
-    name: "श्री अनिल कुमार एवं श्रीमती रिंकू देवी",
-    nameHi: "श्री अनिल कुमार एवं श्रीमती रिंकू देवी",
-    nameEn: "Shri Anil Kumar & Smt. Rinku Devi",
-    relationshipHi: "चाचा जी एवं चाची जी",
-    relationshipEn: "Paternal Uncle & Aunt (Chacha & Chachi)",
-    badgeHi: "चाचा-चाची का आशीष",
-    badgeEn: "Uncle & Aunt's Blessing",
-    message: "प्रिय दीपा और सुमित को दांपत्य जीवन के पावन बंधन की अनंत मंगलकामनाएं। ईश्वर आप दोनों की जोड़ी को सदा सलामत रखे और हर कदम पर सफलता दे।",
-    messageHi: "प्रिय दीपा और सुमित को दांपत्य जीवन के पावन बंधन की अनंत मंगलकामनाएं। ईश्वर आप दोनों की जोड़ी को सदा सलामत रखे और हर कदम पर सफलता दे।",
-    messageEn: "Warmest wishes to beloved Deepa and Sumit as you unite in the sacred bond of marriage. May God bless you both with great health, prosperity, and joyous companionship.",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  },
-  {
-    id: 5,
-    name: "प्रिन्स",
-    nameHi: "प्रिन्स",
-    nameEn: "Prince",
-    relationshipHi: "छोटा भाई (अनुज)",
-    relationshipEn: "Younger Brother",
-    badgeHi: "छोटे भाई का स्नेह",
-    badgeEn: "Brother's Love",
-    message: "दीदी, आपके नए सफर की शुरुआत पर ढेर सारा प्यार और शुभकामनाएं! सुमित जीजा जी, हमारी दीदी का हमेशा ख्याल रखिएगा। आप दोनों को बहुत-बहुत बधाई!",
-    messageHi: "दीदी, आपके नए सफर की शुरुआत पर ढेर सारा प्यार और शुभकामनाएं! सुमित जीजा जी, हमारी दीदी का हमेशा ख्याल रखिएगा। आप दोनों को बहुत-बहुत बधाई!",
-    messageEn: "Dearest Didi, sending you oceans of love on your new journey! Sumit Jija Ji, please take very good care of our wonderful sister. Heartiest congratulations to both of you!",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  },
-  {
-    id: 6,
-    name: "सौरभ एवं समस्त भाई (सुशांत, अंकित, अमन, अर्पित, चिराग)",
-    nameHi: "सौरभ एवं समस्त भाई (सुशांत, अंकित, अमन, अर्पित, चिराग)",
-    nameEn: "Saurav & All Brothers (Sushant, Ankit, Aman, Arpit, Chirag)",
-    relationshipHi: "छोटे भाई (अनुज)",
-    relationshipEn: "Brothers & Cousins",
-    badgeHi: "छोटे भाइयों का स्नेह",
-    badgeEn: "Brothers' Love",
-    message: "दीदी और जीजाजी को शुभ विवाह की अनंत मंगलकामनाएं! हम सब भाइयों की तरफ से दोनों को जीवन भर का प्यार और खुशियां।",
-    messageHi: "दीदी और जीजाजी को शुभ विवाह की अनंत मंगलकामनाएं! हम सब भाइयों की तरफ से दोनों को जीवन भर का प्यार और खुशियां।",
-    messageEn: "Endless blessings and warmest wishes to Didi and Jija Ji on your auspicious wedding! Love, joy, and hearty congratulations from all of us brothers.",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  },
-  {
-    id: 7,
-    name: "रूबी एवं रूची",
-    nameHi: "रूबी एवं रूची",
-    nameEn: "Ruby & Ruchi",
-    relationshipHi: "लाडली बहने",
-    relationshipEn: "Loving Sisters",
-    badgeHi: "लाडली बहने",
-    badgeEn: "Sisters' Love",
-    message: "दीदी और सुमित जीजू को वैवाहिक जीवन की ढेरों शुभकामनाएं! हमारी दीदी की शादी सबसे यादगार और खुशहाल होगी!",
-    messageHi: "दीदी और सुमित जीजू को वैवाहिक जीवन की ढेरों शुभकामनाएं! हमारी दीदी की शादी सबसे यादगार और खुशहाल होगी!",
-    messageEn: "Warmest congratulations and hugs to Didi and Sumit Jeeju! Our dearest sister's wedding will be the happiest and most magical celebration ever!",
-    dateHi: "जनवरी 2027",
-    dateEn: "Jan 2027"
-  }
-];
-
 // Helper blessing message templates
 const quickTemplates = {
   hi: [
@@ -148,33 +40,57 @@ const relationshipOptions = [
 
 // Helper to strictly show pure Hindi or English without awkward mixed parentheses
 const getLocalizedRelationship = (item, lang) => {
+  const rel = item.relationship || item.relation || '';
   if (lang === 'hi') {
     if (item.relationshipHi) return item.relationshipHi;
-    const rel = item.relationship || item.relation || '';
     const clean = rel.replace(/\s*\([A-Za-z\s/&,-]+\)/g, '').trim();
     const match = relationshipOptions.find(o => o.value === rel || o.labelHi === clean || o.labelEn === rel);
-    return match ? match.labelHi : (clean || 'पारिवारिक सदस्य');
+    return match ? match.labelHi : (clean || 'शुभचिंतक');
   } else {
     if (item.relationshipEn) return item.relationshipEn;
-    const rel = item.relationship || item.relation || '';
     const enMatch = rel.match(/\(([A-Za-z\s/&,-]+)\)/);
     if (enMatch) return enMatch[1].trim();
     const match = relationshipOptions.find(o => o.value === rel || o.labelHi === rel || o.labelEn === rel);
-    return match ? match.labelEn : (rel || 'Family Member');
+    return match ? match.labelEn : (rel || 'Well Wisher');
   }
 };
 
 const getLocalizedBadge = (item, lang) => {
-  if (lang === 'hi') {
-    if (item.badgeHi) return item.badgeHi;
-    const b = item.badge || '';
-    return b.replace(/\s*\([A-Za-z\s/&,-]+\)/g, '').trim() || 'स्नेहिल आशीष';
-  } else {
-    if (item.badgeEn) return item.badgeEn;
-    const b = item.badge || '';
-    const enMatch = b.match(/\(([A-Za-z\s/&,-]+)\)/);
-    if (enMatch) return enMatch[1].trim();
-    return 'Blessing';
+  const rel = (item.relationship || item.relation || '').toLowerCase();
+  if (rel.includes('माता') || rel.includes('पिता') || rel.includes('parent')) {
+    return lang === 'hi' ? 'माँ-पापा का आशीष' : "Parents' Blessing";
+  }
+  if (rel.includes('फूफा') || rel.includes('फुआ')) {
+    return lang === 'hi' ? 'फूफा-फुआ का शुभाशीष' : "Elders' Blessing";
+  }
+  if (rel.includes('चाचा') || rel.includes('चाची') || rel.includes('uncle')) {
+    return lang === 'hi' ? 'चाचा-चाची का आशीष' : "Uncle & Aunt's Blessing";
+  }
+  if (rel.includes('भाई') || rel.includes('brother')) {
+    return lang === 'hi' ? 'भाई का स्नेह' : "Brother's Love";
+  }
+  if (rel.includes('बहन') || rel.includes('sister')) {
+    return lang === 'hi' ? 'बहनों का स्नेह' : "Sisters' Love";
+  }
+  return lang === 'hi' ? 'स्नेहिल आशीष' : 'Blessing';
+};
+
+// Format wish date dynamically according to its creation timestamp
+const formatWishDate = (dateStr, lang) => {
+  if (!dateStr) return lang === 'hi' ? 'अक्टूबर 2026' : 'October 2026';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return lang === 'hi' ? 'अक्टूबर 2026' : 'October 2026';
+    const formatted = d.toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', {
+      month: 'long',
+      year: 'numeric'
+    });
+    if (lang === 'hi') {
+      return formatted.replace(/अक्तूबर/g, 'अक्टूबर');
+    }
+    return formatted;
+  } catch {
+    return lang === 'hi' ? 'अक्टूबर 2026' : 'October 2026';
   }
 };
 
@@ -192,24 +108,8 @@ const isExcludedWish = (w) => {
 };
 
 export default function WishesSection({ lang }) {
-  const [wishes, setWishes] = useState(() => {
-    try {
-      // Clear legacy storage versions to prevent cached stale items
-      localStorage.removeItem('deepa_sumit_wishes');
-      localStorage.removeItem('deepa_sumit_wishes_v2');
-      localStorage.removeItem('deepa_sumit_wishes_v4');
-      localStorage.removeItem('deepa_sumit_wishes_v5');
-
-      const saved = localStorage.getItem('deepa_sumit_wishes_v6');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.filter(w => !isExcludedWish(w));
-      }
-    } catch {
-      // fallback
-    }
-    return initialWishes;
-  });
+  const [wishes, setWishes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [form, setForm] = useState({
     name: '',
@@ -220,26 +120,12 @@ export default function WishesSection({ lang }) {
   const [successMsg, setSuccessMsg] = useState(false);
 
   useEffect(() => {
-    // Fetch live wishes from Supabase and merge with family blessings
+    // Fetch live wishes directly from Supabase database
     fetchWishes().then((serverWishes) => {
       if (serverWishes && serverWishes.length > 0) {
-        const formatted = serverWishes
-          .filter(w => !isExcludedWish(w))
-          .map((w) => ({
-            id: w.id,
-            name: w.name,
-            relationship: w.relation || 'शुभचिंतक',
-            message: w.message,
-            date: new Date(w.created_at || Date.now()).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', {
-              month: 'short',
-              year: 'numeric'
-            }),
-            badge: lang === 'hi' ? 'स्नेहिल आशीष' : 'Blessing'
-          }));
-        setWishes([...formatted, ...initialWishes]);
-      } else {
-        setWishes(initialWishes);
+        setWishes(serverWishes.filter(w => !isExcludedWish(w)));
       }
+      setIsLoading(false);
     });
   }, [lang]);
 
@@ -435,11 +321,11 @@ export default function WishesSection({ lang }) {
           {/* Wishes Display Column */}
           <div className="md:col-span-7 space-y-4 max-h-[520px] overflow-y-auto pr-2">
             {wishes.map((item) => {
-              const displayName = lang === 'hi' ? (item.nameHi || item.name) : (item.nameEn || item.name);
+              const displayName = lang === 'hi' ? item.name : (item.name_en || item.name);
               const displayRel = getLocalizedRelationship(item, lang);
               const displayBadge = getLocalizedBadge(item, lang);
-              const displayMsg = lang === 'hi' ? (item.messageHi || item.message) : (item.messageEn || item.message);
-              const displayDate = lang === 'hi' ? (item.dateHi || item.date) : (item.dateEn || item.date);
+              const displayMsg = lang === 'hi' ? item.message : (item.message_en || item.message);
+              const displayDate = formatWishDate(item.created_at, lang);
               const firstLetter = displayName ? displayName.trim().charAt(0) : '🌸';
 
               return (
