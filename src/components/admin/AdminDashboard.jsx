@@ -164,7 +164,18 @@ export default function AdminDashboard({ onBackToSite }) {
       if (stored) rawLocal = JSON.parse(stored);
     } catch {}
 
-    const allVisits = rawLocal.length > 0 ? rawLocal : visits;
+    // Combine Supabase cloud visits with local logs, deduplicating by visitorId/id
+    const visitMap = new Map();
+    rawLocal.forEach((v) => {
+      const key = v.visitorId || v.id || `${v.deviceType}_${v.created_at}`;
+      visitMap.set(key, v);
+    });
+    visits.forEach((v) => {
+      const key = v.visitorId || v.id || `${v.deviceType}_${v.visited_at || v.created_at}`;
+      visitMap.set(key, v);
+    });
+
+    const allVisits = Array.from(visitMap.values());
     const total = allVisits.length || 1;
 
     let android = 0, iphone = 0, desktop = 0, tablet = 0;
@@ -173,7 +184,7 @@ export default function AdminDashboard({ onBackToSite }) {
     let india = 0, abroad = 0;
 
     allVisits.forEach((v) => {
-      const str = `${v.device_type || ''} ${v.browser || ''} ${v.os || ''}`.toLowerCase();
+      const str = `${v.deviceType || v.device_type || ''} ${v.browser || ''} ${v.os || ''}`.toLowerCase();
       if (str.includes('iphone') || str.includes('ios')) iphone++;
       else if (str.includes('android')) android++;
       else if (str.includes('tablet') || str.includes('ipad')) tablet++;
@@ -185,12 +196,12 @@ export default function AdminDashboard({ onBackToSite }) {
       else if (ref.includes('instagram') || ref.includes('facebook') || ref.includes('social')) social++;
       else direct++;
 
-      const net = `${v.network || ''} ${v.browser || ''}`.toLowerCase();
+      const net = `${v.network || ''} ${v.browser || ''} ${v.fullBrowser || ''}`.toLowerCase();
       if (net.includes('5g')) fiveG++;
       else if (net.includes('4g')) fourG++;
       else wifi++;
 
-      const tz = `${v.timezone || ''} ${v.screen || ''}`.toLowerCase();
+      const tz = `${v.timezone || ''} ${v.screen || ''} ${v.screen_resolution || ''}`.toLowerCase();
       if (tz.includes('kolkata') || tz.includes('calcutta') || tz.includes('india') || !v.timezone) india++;
       else abroad++;
     });

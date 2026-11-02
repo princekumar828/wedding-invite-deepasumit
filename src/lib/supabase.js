@@ -535,21 +535,63 @@ export async function deleteAdminWish(id) {
  */
 export async function fetchRecentVisits() {
   if (!isSupabaseConfigured || !supabase) {
-    return [];
+    try {
+      const stored = localStorage.getItem('ds_detailed_visitors');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
   }
 
   try {
     const { data, error } = await supabase
       .from('site_visits')
-      .select('id, device_type, browser, screen, referrer, created_at')
-      .order('created_at', { ascending: false })
-      .limit(30);
+      .select('id, visitor_id, device_type, browser, screen_resolution, referrer, visited_at')
+      .order('visited_at', { ascending: false })
+      .limit(100);
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map((v) => {
+      // Parse device & OS: e.g. "Desktop (macOS)" or "Android Phone (Android)"
+      const devMatch = (v.device_type || '').match(/^([^(]+)(?:\(([^)]+)\))?/);
+      const deviceType = devMatch ? devMatch[1].trim() : (v.device_type || 'Mobile');
+      const os = devMatch && devMatch[2] ? devMatch[2].trim() : 'Unknown';
+
+      // Parse browser & network: e.g. "Google Chrome • 4G"
+      const browserParts = (v.browser || '').split('•').map(s => s.trim());
+      const browserName = browserParts[0] || v.browser || 'Browser';
+      const network = browserParts[1] || '4G/WiFi';
+
+      // Parse screen & timezone: e.g. "1470x835 (2x, Landscape) [Asia/Calcutta]"
+      const screenParts = (v.screen_resolution || '').split('[');
+      const screen = screenParts[0]?.trim() || v.screen_resolution || 'Mobile Screen';
+      const timezone = screenParts[1]?.replace(']', '')?.trim() || 'Asia/Kolkata';
+
+      return {
+        id: v.id,
+        visitorId: v.visitor_id,
+        deviceType,
+        device_type: v.device_type,
+        os,
+        browser: browserName,
+        fullBrowser: v.browser,
+        network,
+        screen,
+        screen_resolution: v.screen_resolution,
+        timezone,
+        referrer: v.referrer || 'Direct Link',
+        created_at: v.visited_at,
+        visited_at: v.visited_at
+      };
+    });
   } catch (err) {
     console.warn('Fetch visits error:', err);
-    return [];
+    try {
+      const stored = localStorage.getItem('ds_detailed_visitors');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
   }
 }
 
