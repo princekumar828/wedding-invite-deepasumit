@@ -155,10 +155,12 @@ export default function CoupleSection({ lang }) {
                   <p className="font-medium text-gray-900">{groom[lang].relationDesc}</p>
                 </div>
 
-                <div className="flex items-center gap-2 pt-1 text-gray-700 px-2">
-                  <MapPin className="w-4 h-4 text-[#9B111E] shrink-0" />
-                  <span className="font-medium">{groom[lang].location}</span>
-                </div>
+                {groom[lang]?.location && (
+                  <div className="flex items-center gap-2 pt-1 text-gray-700 px-2">
+                    <MapPin className="w-4 h-4 text-[#9B111E] shrink-0" />
+                    <span className="font-medium">{groom[lang].location}</span>
+                  </div>
+                )}
               </div>
             </div>
 

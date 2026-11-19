@@ -34,7 +34,7 @@ export default function WhatsAppInviteSection({ lang }) {
 *आयुष्मती दीपा साहू*
 संग
 *चिरंजीवी सुमित प्रसाद*
-(सुपुत्र: श्रीमती रीता देवी एवं श्री रमेश प्रसाद, आन, चंदवा)
+(सुपुत्र: श्रीमती रीता देवी एवं श्री रमेश प्रसाद)
 के पावन वैवाहिक परिणय की मांगलिक बेला पर आप सपरिवार सादर आमंत्रित हैं।
 
 ━━━━━━━━━━━━━━━━━━━━
@@ -43,7 +43,7 @@ export default function WhatsAppInviteSection({ lang }) {
 ━━━━━━━━━━━━━━━━━━━━
 
 ✨ *मांगलिक वैवाहिक कार्यक्रम:*
-• 20 जनवरी: शुभ तिलकोत्सव (दिन में - वर पक्ष निवास, आन, चंदवा)
+• 20 जनवरी: शुभ तिलकोत्सव (दिन में - वर पक्ष निवास)
 • 23 जनवरी: मण्डपाच्छादन एवं हल्दी (देवाकी)
 • 24 जनवरी: घृतढारी, मेहन्दी एवं संगीत (देवाकी)
 • 25 जनवरी: बारात आगमन एवं शुभ-विवाह (उत्सव बैंक्वेट हॉल, घाघरा)
@@ -79,7 +79,7 @@ With the divine grace of Almighty God and blessings of our beloved elders, we co
 *Ayushmati Deepa Sahu*
 with
 *Chiranjeevi Sumit Prasad*
-(S/o Smt. Rita Devi & Shri Ramesh Prasad, Aan, Chandwa)
+(S/o Smt. Rita Devi & Shri Ramesh Prasad)
 
 ━━━━━━━━━━━━━━━━━━━━
 📅 *Wedding Date:* January 25, 2027 (Monday)
@@ -87,7 +87,7 @@ with
 ━━━━━━━━━━━━━━━━━━━━
 
 ✨ *Auspicious Ceremony Schedule:*
-• Jan 20 (Wed): Tilak Ceremony (Daytime - Groom's Residence, Aan, Chandwa)
+• Jan 20 (Wed): Tilak Ceremony (Daytime - Groom's Residence)
 • Jan 23 (Sat): Mandapachhadan & Haldi (Devaki)
 • Jan 24 (Sun): Ghritdhari, Mehendi & Sangeet (Devaki)
 • Jan 25 (Mon): Baraat Arrival & Shubha Vivah (Utsav Banquet Hall, Ghaghra)

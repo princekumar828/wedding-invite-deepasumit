@@ -22,14 +22,12 @@ export const weddingData = {
         name: "सुमित प्रसाद",
         fatherMother: "श्रीमती रीता देवी एवं श्री रमेश प्रसाद",
         relationDesc: "द्वितीय सुपुत्र : श्रीमती रीता देवी एवं श्री रमेश प्रसाद",
-        location: "आन, चंदवा (लातेहार)",
       },
       en: {
         prefix: "Chiranjeevi",
         name: "Sumit Prasad",
         fatherMother: "Smt. Rita Devi & Shri Ramesh Prasad",
         relationDesc: "Second Son of Smt. Rita Devi & Shri Ramesh Prasad",
-        location: "Aan, Chandwa (Latehar)",
       }
     },
     weddingDateISO: "2027-01-25T19:00:00+05:30",
@@ -91,8 +89,8 @@ export const weddingData = {
         en: "Daytime (Forenoon / Morning)"
       },
       location: {
-        hi: "वर पक्ष का निवास स्थान (आन, चंदवा, लातेहार)",
-        en: "Groom's Residence (Aan, Chandwa, Latehar)"
+        hi: "वर पक्ष का निवास स्थान",
+        en: "Groom's Residence"
       },
       icon: "Sparkles",
       color: "from-amber-500/20 to-orange-500/10",
