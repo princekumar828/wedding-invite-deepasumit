@@ -1,8 +1,8 @@
 import React from 'react';
-import { Languages, Calendar, MapPin, Heart, Users, MessageSquareHeart, MessageCircle, Scroll } from 'lucide-react';
+import { Languages, Calendar, MapPin, Heart, Users, MessageSquareHeart, MessageCircle } from 'lucide-react';
 import { NavAudioButton } from './AudioPlayer';
 
-export default function QuickNavbar({ lang, setLang, onOpenRsvp, onOpenLaganPatrika, isPlaying, toggleMusic }) {
+export default function QuickNavbar({ lang, setLang, onOpenRsvp, isPlaying, toggleMusic }) {
   const toggleLang = () => {
     setLang((prev) => (prev === 'hi' ? 'en' : 'hi'));
   };
@@ -67,16 +67,6 @@ export default function QuickNavbar({ lang, setLang, onOpenRsvp, onOpenLaganPatr
           >
             <Languages className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>{lang === 'hi' ? 'EN' : 'हिन्दी'}</span>
-          </button>
-
-          {/* Lagan Patrika Button */}
-          <button
-            onClick={onOpenLaganPatrika}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#D4AF37] bg-amber-50/80 hover:bg-amber-100 text-xs font-serif font-bold text-[#7A0A15] shadow-xs transition-all cursor-pointer"
-            title={lang === 'hi' ? 'डिजिटल लग्न पत्रिका' : 'Digital Lagan Patrika'}
-          >
-            <Scroll className="w-3.5 h-3.5 text-[#9B111E]" />
-            <span>{lang === 'hi' ? 'लग्न पत्रिका' : 'Lagan Patrika'}</span>
           </button>
 
           {/* Attendance Confirmation Button */}

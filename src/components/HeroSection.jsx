@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Calendar, MapPin, ChevronDown, Scroll } from 'lucide-react';
+import { Sparkles, Calendar, MapPin, ChevronDown } from 'lucide-react';
 import { weddingData } from '../data/weddingData';
 import { MangalKalash } from './TraditionalMotifs';
 
-export default function HeroSection({ lang, onOpenRsvp, onOpenLaganPatrika }) {
+export default function HeroSection({ lang, onOpenRsvp }) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -191,14 +191,6 @@ export default function HeroSection({ lang, onOpenRsvp, onOpenLaganPatrika }) {
 
         {/* Call to Actions */}
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            onClick={onOpenLaganPatrika}
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 via-[#D4AF37] to-amber-600 text-[#4A0E17] font-serif font-bold text-sm shadow-md hover:brightness-105 border border-amber-300 transition-all flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer"
-          >
-            <Scroll className="w-4 h-4 text-[#9B111E]" />
-            <span>{lang === 'hi' ? 'डिजिटल लग्न पत्रिका' : 'Digital Lagan Patrika'}</span>
-          </button>
-
           <a
             href="#events"
             className="px-6 py-3 rounded-full bg-[#9B111E] text-white font-serif font-medium text-sm shadow-md hover:bg-[#7A0A15] border border-[#D4AF37] transition-all transform hover:-translate-y-0.5"
