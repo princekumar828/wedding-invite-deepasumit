@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, MapPin, Sparkles, Plus } from 'lucide-react';
+import { Calendar, Clock, MapPin, Sparkles, Plus, Scroll } from 'lucide-react';
 import { weddingData } from '../data/weddingData';
 import { TilakThaliIcon, HaldiPotIcon, MehendiSangeetIcon, VivahMandapIcon } from './TraditionalMotifs';
 
@@ -29,7 +29,7 @@ const ritualMantras = {
   }
 };
 
-export default function CeremoniesSection({ lang }) {
+export default function CeremoniesSection({ lang, onOpenLaganPatrika }) {
   const generateGoogleCalLink = (event) => {
     const title = encodeURIComponent(`${event.title[lang]} - Deepa & Sumit Wedding`);
     const details = encodeURIComponent(
@@ -141,6 +141,33 @@ export default function CeremoniesSection({ lang }) {
               </div>
             );
           })}
+        </div>
+
+        {/* Lagan Patrika Banner */}
+        <div className="mt-12 max-w-3xl mx-auto bg-gradient-to-r from-amber-100 via-[#FFF9EE] to-amber-100 p-5 sm:p-6 rounded-3xl border-2 border-[#D4AF37] shadow-royal flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#9B111E] text-white flex items-center justify-center shadow-md shrink-0">
+              <Scroll className="w-6 h-6 text-[#F5D77F]" />
+            </div>
+            <div>
+              <h4 className="font-serif font-bold text-base text-[#4A0E17]">
+                {lang === 'hi' ? '॥ संपूर्ण मांगलिक लग्न पत्रिका ॥' : 'Complete Sacred Lagan Patrika'}
+              </h4>
+              <p className="text-xs text-gray-700 font-serif mt-0.5">
+                {lang === 'hi'
+                  ? 'वैदिक पंचांग, शुभ मुहूर्त, कुल गोत्र एवं संपूर्ण मांगलिक तिथियां देखें'
+                  : 'View Vedic Muhurat, family lineage & complete astrological details'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onOpenLaganPatrika}
+            className="px-5 py-2.5 rounded-full bg-[#9B111E] hover:bg-[#7A0A15] text-white font-serif font-bold text-xs shadow-md transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+          >
+            <Scroll className="w-3.5 h-3.5 text-[#F5D77F]" />
+            <span>{lang === 'hi' ? 'लग्न पत्रिका खोलें' : 'View Lagan Patrika'}</span>
+          </button>
         </div>
       </div>
     </section>

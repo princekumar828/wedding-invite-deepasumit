@@ -12,17 +12,19 @@ import WishesSection from './components/WishesSection';
 import WhatsAppInviteSection from './components/WhatsAppInviteSection';
 import Footer from './components/Footer';
 import RsvpModal from './components/RsvpModal';
+import LaganPatrikaModal from './components/LaganPatrikaModal';
 import FloatingFlowerShower, { triggerFlowerShower } from './components/FlowerShower';
 import { TraditionalToran } from './components/TraditionalMotifs';
 import AdminDashboard from './components/admin/AdminDashboard';
 import LiveWeddingFeed from './components/LiveWeddingFeed';
 import { recordVisit, getLocalNotice, fetchLiveNotice, subscribeToNotice } from './lib/supabase';
-import { Calendar, MapPin, Heart, MessageSquareHeart, Flower2, MessageCircle } from 'lucide-react';
+import { Calendar, MapPin, Heart, MessageSquareHeart, Flower2, MessageCircle, Scroll } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState('hi');
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
   const [isRsvpOpen, setIsRsvpOpen] = useState(false);
+  const [isLaganPatrikaOpen, setIsLaganPatrikaOpen] = useState(false);
 
   // Admin Route state (supports /admin, #admin, or query param)
   const [isAdminView, setIsAdminView] = useState(() => {
@@ -165,6 +167,7 @@ export default function App() {
         lang={lang}
         setLang={setLang}
         onOpenRsvp={() => setIsRsvpOpen(true)}
+        onOpenLaganPatrika={() => setIsLaganPatrikaOpen(true)}
         isPlaying={isPlaying}
         toggleMusic={toggleMusic}
       />
@@ -177,11 +180,15 @@ export default function App() {
         <HeroSection
           lang={lang}
           onOpenRsvp={() => setIsRsvpOpen(true)}
+          onOpenLaganPatrika={() => setIsLaganPatrikaOpen(true)}
         />
 
         <CoupleSection lang={lang} />
 
-        <CeremoniesSection lang={lang} />
+        <CeremoniesSection
+          lang={lang}
+          onOpenLaganPatrika={() => setIsLaganPatrikaOpen(true)}
+        />
 
         <VenueSection lang={lang} />
 
@@ -209,8 +216,24 @@ export default function App() {
         lang={lang}
       />
 
-      {/* 10. Mobile Sticky Quick Action Bar (Bottom) */}
+      {/* 10. Digital Lagan Patrika Modal */}
+      <LaganPatrikaModal
+        isOpen={isLaganPatrikaOpen}
+        onClose={() => setIsLaganPatrikaOpen(false)}
+        lang={lang}
+      />
+
+      {/* 11. Mobile Sticky Quick Action Bar (Bottom) */}
       <div className="md:hidden fixed bottom-3 left-3 right-3 z-30 bg-white/95 backdrop-blur-md rounded-full border border-[#D4AF37] shadow-xl p-1.5 flex items-center justify-around text-[10px] font-medium text-[#4A0E17]">
+        <button
+          onClick={() => setIsLaganPatrikaOpen(true)}
+          className="flex flex-col items-center py-1 px-1 text-amber-800 font-bold"
+          title="लग्न पत्रिका"
+        >
+          <Scroll className="w-3.5 h-3.5 text-amber-600" />
+          <span>{lang === 'hi' ? 'पत्रिका' : 'Patrika'}</span>
+        </button>
+
         <a href="#events" className="flex flex-col items-center py-1 px-1 hover:text-[#9B111E]">
           <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span>{lang === 'hi' ? 'कार्यक्रम' : 'Events'}</span>
@@ -227,12 +250,12 @@ export default function App() {
           title="पुष्प वर्षा"
         >
           <Flower2 className="w-3.5 h-3.5 text-amber-500 animate-spin" />
-          <span>{lang === 'hi' ? 'पुष्प वर्षा' : 'Flowers'}</span>
+          <span>{lang === 'hi' ? 'पुष्प' : 'Flowers'}</span>
         </button>
 
         <a href="#share-invite" className="flex flex-col items-center py-1 px-1 text-emerald-700 font-bold">
           <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-          <span>{lang === 'hi' ? 'व्हाट्सएप' : 'Invite'}</span>
+          <span>{lang === 'hi' ? 'निमंत्रण' : 'Invite'}</span>
         </a>
 
         <button
